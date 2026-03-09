@@ -76,7 +76,7 @@ export default function Navbar() {
                   className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors md:text-base ${
                     isActive
                       ? "bg-nexifi-orange/10 text-nexifi-orange"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-nexifi-orange"
                   }`}
                 >
                   {link.label}

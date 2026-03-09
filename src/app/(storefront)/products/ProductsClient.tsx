@@ -81,7 +81,7 @@ export default function ProductsClient({
       <div className="mt-6 flex gap-8">
         {/* Desktop Filters */}
         <aside className="hidden w-56 shrink-0 lg:block">
-          <div className="sticky top-24 rounded-xl border p-4">
+          <div className="sticky top-24 rounded-xl border bg-muted/30 p-4">
             <h2 className="font-semibold">Filters</h2>
             <div className="mt-4 space-y-6">
               <div>
@@ -137,7 +137,7 @@ export default function ProductsClient({
             <select
               value={currentSort}
               onChange={(e) => handleSortChange(e.target.value)}
-              className="h-9 rounded-lg border bg-background px-3 text-sm"
+              className="h-9 cursor-pointer rounded-lg border bg-background px-3 text-sm transition-colors hover:border-nexifi-orange/40"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>

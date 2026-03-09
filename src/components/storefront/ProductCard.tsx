@@ -31,7 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexifi-orange"
+      className="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:border-nexifi-orange/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexifi-orange"
     >
       {/* Image Area */}
       <div className="relative aspect-square overflow-hidden bg-muted">

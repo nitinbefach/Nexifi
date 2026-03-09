@@ -55,7 +55,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <Link href={slide.href} className="block">
+      <Link href={slide.href} className="group/banner block">
         <div className="relative h-[180px] bg-neutral-900 sm:h-[250px] md:h-[420px] lg:h-[460px] xl:h-[500px]">
           <picture>
             <source media="(min-width: 768px)" srcSet={slide.desktop} />
@@ -63,7 +63,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
             <img
               src={slide.mobile}
               alt={slide.alt}
-              className="size-full object-cover transition-opacity duration-700"
+              className="size-full object-cover transition-all duration-700 group-hover/banner:brightness-[0.97]"
               loading={current === 0 ? "eager" : "lazy"}
             />
           </picture>
