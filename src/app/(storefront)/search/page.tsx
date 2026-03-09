@@ -11,7 +11,7 @@ interface SearchPageProps {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q, sort } = await searchParams;
 
-  const results = q ? await searchProducts(q) : [];
+  const results = q ? await searchProducts(q, sort || "newest") : [];
   const products = results.map(toCardProduct);
   const currentSort = sort || "newest";
 
