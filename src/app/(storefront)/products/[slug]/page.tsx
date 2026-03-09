@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProductBySlug } from "@/lib/supabase/queries";
+import { getProductBySlug, getProducts, toCardProduct } from "@/lib/supabase/queries";
 import ProductDetailClient from "./ProductDetailClient";
 import type { Metadata } from "next";
 
@@ -30,9 +30,19 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   if (!product) notFound();
 
+  // Fetch related products from same category
+  const relatedRaw = product.category?.slug
+    ? await getProducts({ categorySlug: product.category.slug, limit: 5 })
+    : { products: [] };
+  const relatedProducts = relatedRaw.products
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4)
+    .map(toCardProduct);
+
   return (
     <ProductDetailClient
       slug={slug}
+      relatedProducts={relatedProducts}
       product={{
         id: product.id,
         name: product.name,

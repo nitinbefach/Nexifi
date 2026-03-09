@@ -38,7 +38,7 @@ export default function Footer() {
                 className="h-8 w-auto sm:h-9 md:h-10"
               />
             </Link>
-            <p className="mt-3 text-sm text-muted-foreground md:text-base md:mt-4">
+            <p className="mt-3 text-sm text-muted-foreground md:text-base md:mt-4 lg:text-lg">
               Next is Now. Shop electronics, gadgets & more at wholesale prices with fast delivery across India.
             </p>
             <div className="mt-4 flex gap-2.5 md:mt-5">
@@ -56,7 +56,7 @@ export default function Footer() {
 
           {/* Shop */}
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground lg:text-base">
               Shop
             </h4>
             <ul className="mt-3 space-y-2 md:mt-4 md:space-y-3">
@@ -64,7 +64,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base"
+                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base lg:text-lg"
                   >
                     {link.label}
                   </Link>
@@ -75,7 +75,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground lg:text-base">
               Company
             </h4>
             <ul className="mt-3 space-y-2 md:mt-4 md:space-y-3">
@@ -83,7 +83,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base"
+                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base lg:text-lg"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +94,7 @@ export default function Footer() {
 
           {/* Help */}
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm md:font-semibold md:text-foreground lg:text-base">
               Help
             </h4>
             <ul className="mt-3 space-y-2 md:mt-4 md:space-y-3">
@@ -102,7 +102,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base"
+                    className="text-sm text-muted-foreground transition-colors hover:text-nexifi-orange md:text-base lg:text-lg"
                   >
                     {link.label}
                   </Link>
@@ -114,7 +114,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col items-center gap-2.5 border-t pt-5 sm:flex-row sm:justify-between md:mt-12 md:pt-8">
-          <p className="text-xs text-muted-foreground md:text-sm">
+          <p className="text-xs text-muted-foreground md:text-sm lg:text-base">
             &copy; {new Date().getFullYear()} NEXIFI. All rights reserved.
           </p>
           <div className="flex items-center gap-3 text-xs text-muted-foreground md:gap-4 md:text-sm">

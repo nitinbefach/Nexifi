@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ChevronRight, Minus, Plus, Share2 } from "lucide-react";
 import AddToCartButton from "@/components/storefront/AddToCartButton";
 import BuyNowButton from "@/components/storefront/BuyNowButton";
+import RelatedProducts from "@/components/storefront/RelatedProducts";
+import type { Product } from "@/components/storefront/ProductCard";
 import StarRating from "@/components/storefront/StarRating";
 import { useProductPageStore } from "@/stores/product-page-store";
 import { formatINR } from "@/lib/utils";
@@ -28,9 +30,10 @@ interface ProductData {
 interface ProductDetailClientProps {
   slug: string;
   product: ProductData;
+  relatedProducts?: Product[];
 }
 
-export default function ProductDetailClient({ slug, product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ slug, product, relatedProducts = [] }: ProductDetailClientProps) {
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -303,6 +306,9 @@ export default function ProductDetailClient({ slug, product }: ProductDetailClie
           )}
         </div>
       </section>
+
+      {/* Related Products */}
+      <RelatedProducts products={relatedProducts} />
     </div>
   );
 }
