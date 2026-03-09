@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Minus, Plus, Share2 } from "lucide-react";
 import AddToCartButton from "@/components/storefront/AddToCartButton";
+import BuyNowButton from "@/components/storefront/BuyNowButton";
 import StarRating from "@/components/storefront/StarRating";
 import { useProductPageStore } from "@/stores/product-page-store";
 import { formatINR } from "@/lib/utils";
@@ -231,6 +232,16 @@ export default function ProductDetailClient({ slug, product }: ProductDetailClie
               price={product.sellingPrice}
               originalPrice={product.originalPrice}
               variantId={selectedVariant || undefined}
+              className="flex-1"
+            />
+            <BuyNowButton
+              productId={product.id}
+              name={product.name}
+              image={product.images[0]?.image_url ?? ""}
+              price={product.sellingPrice}
+              originalPrice={product.originalPrice}
+              variantId={selectedVariant || undefined}
+              quantity={quantity}
               className="flex-1"
             />
             <button

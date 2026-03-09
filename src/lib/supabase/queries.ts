@@ -247,18 +247,37 @@ export async function getBanners(): Promise<Banner[]> {
 
 export async function searchProducts(
   query: string,
+  sort = "newest",
   limit = 20
 ): Promise<(Product & { images: ProductImage[] })[]> {
   const supabase = await createClient();
 
   // Use ilike for simple search (more forgiving than full-text for partial matches)
-  const { data, error } = await supabase
+  let q = supabase
     .from("products")
     .select("*, images:product_images(*)")
     .eq("is_active", true)
-    .ilike("name", `%${query}%`)
-    .order("avg_rating", { ascending: false })
-    .limit(limit);
+    .ilike("name", `%${query}%`);
+
+  switch (sort) {
+    case "price-asc":
+      q = q.order("selling_price", { ascending: true });
+      break;
+    case "price-desc":
+      q = q.order("selling_price", { ascending: false });
+      break;
+    case "rating":
+      q = q.order("avg_rating", { ascending: false });
+      break;
+    case "best-selling":
+      q = q.order("review_count", { ascending: false });
+      break;
+    case "newest":
+    default:
+      q = q.order("created_at", { ascending: false });
+  }
+
+  const { data, error } = await q.limit(limit);
 
   if (error) {
     console.error("searchProducts error:", error.message);
