@@ -32,7 +32,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
         <Link
           key={cat.id}
           href={`/categories/${cat.slug}`}
-          className="group relative flex h-24 items-center justify-center overflow-hidden rounded-xl sm:h-32 md:h-44 lg:h-48"
+          className="group relative flex h-24 items-center justify-center overflow-hidden rounded-xl ring-2 ring-transparent transition-all duration-200 hover:shadow-lg hover:ring-nexifi-orange/30 sm:h-32 md:h-44 lg:h-48"
         >
           {cat.image_url ? (
             <Image

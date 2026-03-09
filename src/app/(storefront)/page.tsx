@@ -33,7 +33,7 @@ export default async function HomePage() {
 
       {/* Trust Badges */}
       <section className="border-b bg-muted/30">
-        <div className="mx-auto grid max-w-7xl grid-cols-4 gap-1 px-3 py-2.5 sm:flex sm:justify-center sm:gap-8 sm:px-6 md:gap-10 md:py-6 lg:gap-14 lg:px-8 lg:py-7">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 px-3 py-3 sm:flex sm:justify-center sm:gap-8 sm:px-6 md:gap-10 md:py-6 lg:gap-14 lg:px-8 lg:py-7">
           {trustBadges.map((badge) => (
             <div
               key={badge.label}
@@ -54,7 +54,7 @@ export default async function HomePage() {
       {/* Browse Categories */}
       <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-12 md:py-16 lg:px-8 lg:py-20">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl">Browse Categories</h2>
+          <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl lg:text-4xl">Browse Categories</h2>
           <Link
             href="/products"
             className="flex items-center gap-1 text-sm font-semibold text-nexifi-orange hover:underline md:text-base"
@@ -71,7 +71,7 @@ export default async function HomePage() {
       <section className="bg-muted/20">
         <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-12 md:py-16 lg:px-8 lg:py-20">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl">Best Selling</h2>
+            <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl lg:text-4xl">Best Selling</h2>
             <Link
               href="/products?sort=best-selling"
               className="flex items-center gap-1 text-sm font-semibold text-nexifi-orange hover:underline md:text-base"
@@ -88,7 +88,7 @@ export default async function HomePage() {
       {/* Trending Now */}
       <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-12 md:py-16 lg:px-8 lg:py-20">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl">Trending Now</h2>
+          <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl lg:text-4xl">Trending Now</h2>
           <Link
             href="/products?sort=newest"
             className="flex items-center gap-1 text-sm font-semibold text-nexifi-orange hover:underline md:text-base"

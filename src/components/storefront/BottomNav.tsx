@@ -3,10 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, ShoppingCart, Headset, SlidersHorizontal, ArrowUpDown, Zap } from "lucide-react";
+import { Home, LayoutGrid, ShoppingCart, Headset, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { useCartStore } from "@/stores/cart-store";
 import { useUIStore } from "@/stores/ui-store";
 import { useProductPageStore } from "@/stores/product-page-store";
+import BuyNowButton from "@/components/storefront/BuyNowButton";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
@@ -112,13 +113,15 @@ function ProductActionBar() {
         <ShoppingCart className="size-4" />
         Add to Cart
       </button>
-      <Link
-        href="/checkout"
-        className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-nexifi-orange py-2.5 text-sm font-semibold text-white transition-colors active:bg-nexifi-orange-dark"
-      >
-        <Zap className="size-4" />
-        Buy Now
-      </Link>
+      <BuyNowButton
+        productId={product?.productId ?? ""}
+        name={product?.name ?? ""}
+        image={product?.image ?? ""}
+        price={product?.price ?? 0}
+        originalPrice={product?.originalPrice ?? 0}
+        variantId={product?.variantId}
+        compact
+      />
     </div>
   );
 }
