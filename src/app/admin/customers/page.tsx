@@ -1,55 +1,68 @@
-export default function AdminCustomersPage() {
+import { getAdminCustomers } from "@/lib/supabase/admin-queries";
+import { formatINR } from "@/lib/utils";
+
+export default async function AdminCustomersPage() {
+  const { customers } = await getAdminCustomers();
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900">Customers</h2>
       <p className="mt-2 text-sm text-gray-500">
-        View and manage all registered customers on your NEXIFI store. Access
-        customer profiles, order history, and account details.
+        {customers.length} unique customer{customers.length !== 1 ? "s" : ""} from
+        guest checkout orders.
       </p>
 
-      {/* Placeholder Customer List */}
-      <div className="mt-6 bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {["Customer", "Email", "Orders", "Total Spent", "Joined"].map(
-                (header) => (
-                  <th
-                    key={header}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                )
-              )}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {[
-              { name: "Alice Johnson", orders: 12, spent: "$1,249.00" },
-              { name: "Bob Smith", orders: 5, spent: "$430.00" },
-              { name: "Carol Williams", orders: 8, spent: "$890.00" },
-            ].map((customer, i) => (
-              <tr key={i} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                  {customer.name}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {customer.name.toLowerCase().replace(" ", ".")}@email.com
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {customer.orders}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {customer.spent}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Jan {i + 10}, 2026
-                </td>
+      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+                <th className="px-6 py-3">Customer</th>
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Phone</th>
+                <th className="px-6 py-3">Orders</th>
+                <th className="px-6 py-3">Total Spent</th>
+                <th className="px-6 py-3">First Order</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {customers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-10 text-center text-gray-400">
+                    No customers yet. Orders will appear here once placed.
+                  </td>
+                </tr>
+              ) : (
+                customers.map((customer) => (
+                  <tr key={customer.guest_email} className="hover:bg-gray-50">
+                    <td className="px-6 py-3 font-medium text-gray-900">
+                      {customer.guest_name}
+                    </td>
+                    <td className="px-6 py-3 text-gray-600">
+                      {customer.guest_email}
+                    </td>
+                    <td className="px-6 py-3 text-gray-600">
+                      {customer.guest_phone}
+                    </td>
+                    <td className="px-6 py-3 text-gray-900">
+                      {customer.order_count}
+                    </td>
+                    <td className="px-6 py-3 font-medium">
+                      {formatINR(customer.total_spent)}
+                    </td>
+                    <td className="px-6 py-3 text-gray-500">
+                      {new Date(customer.first_order).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
