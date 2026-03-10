@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, Package, Loader2 } from "lucide-react";
 import { formatINR } from "@/lib/utils";
@@ -42,6 +42,20 @@ interface Order {
 }
 
 export default function TrackOrderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-nexifi-orange" />
+        </div>
+      }
+    >
+      <TrackOrderContent />
+    </Suspense>
+  );
+}
+
+function TrackOrderContent() {
   const searchParams = useSearchParams();
   const [orderNumber, setOrderNumber] = useState(searchParams.get("order") || "");
   const [order, setOrder] = useState<Order | null>(null);

@@ -45,7 +45,7 @@ function formatType(type: string): string {
 }
 
 export default function NotificationsClient({ initialNotifications }: Props) {
-  const [notifications] = useState(initialNotifications);
+  const notifications = initialNotifications;
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
 
   const filtered = notifications.filter((n) => {
@@ -61,7 +61,7 @@ export default function NotificationsClient({ initialNotifications }: Props) {
   ];
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString("en-IN", {
+    new Date(d).toLocaleString("en-IN", {
       day: "numeric",
       month: "short",
       year: "numeric",

@@ -333,7 +333,7 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
             <div className="mt-3 space-y-2 text-sm text-gray-600">
               <p>
                 <span className="font-medium text-gray-900">Submitted:</span>{" "}
-                {new Date(returnReq.created_at).toLocaleDateString("en-IN", {
+                {new Date(returnReq.created_at).toLocaleString("en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -343,7 +343,7 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
               </p>
               <p>
                 <span className="font-medium text-gray-900">Last Updated:</span>{" "}
-                {new Date(returnReq.updated_at).toLocaleDateString("en-IN", {
+                {new Date(returnReq.updated_at).toLocaleString("en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
