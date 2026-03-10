@@ -12,9 +12,8 @@ export interface Order {
   payment_method: "online" | "cod";
   payment_status: PaymentStatus;
   cod_charge: number;
-  razorpay_order_id: string | null;
-  razorpay_payment_id: string | null;
-  razorpay_signature: string | null;
+  phonepe_transaction_id: string | null;
+  phonepe_payment_id: string | null;
   shipping_address: ShippingAddress;
   tracking_number: string | null;
   tracking_url: string | null;
