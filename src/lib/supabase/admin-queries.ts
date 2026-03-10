@@ -436,3 +436,175 @@ export async function deleteReview(id: string) {
 
   return { error };
 }
+
+// ============================================================
+// RETURN REQUESTS
+// ============================================================
+
+export async function getAdminReturns(status = "") {
+  let query = supabaseAdmin
+    .from("return_requests")
+    .select("*, order:orders(order_number, guest_name, guest_email)")
+    .order("created_at", { ascending: false });
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  return { returns: data ?? [], error };
+}
+
+export async function getAdminReturnById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from("return_requests")
+    .select("*, order:orders(order_number, guest_name, guest_email, guest_phone, shipping_address, items:order_items(*))")
+    .eq("id", id)
+    .single();
+
+  return { returnRequest: data, error };
+}
+
+export async function updateReturnStatus(
+  id: string,
+  updateData: { status?: string; admin_notes?: string; refund_amount?: number }
+) {
+  const { data, error } = await supabaseAdmin
+    .from("return_requests")
+    .update({ ...updateData, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { returnRequest: data, error };
+}
+
+export async function deleteReturn(id: string) {
+  const { error } = await supabaseAdmin
+    .from("return_requests")
+    .delete()
+    .eq("id", id);
+
+  return { error };
+}
+
+// ============================================================
+// SHIPMENTS
+// ============================================================
+
+export async function getAdminShipments() {
+  const { data, error } = await supabaseAdmin
+    .from("shipments")
+    .select("*, order:orders(order_number, guest_name, status)")
+    .order("created_at", { ascending: false });
+
+  return { shipments: data ?? [], error };
+}
+
+export async function getShipmentByOrderId(orderId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("shipments")
+    .select("*")
+    .eq("order_id", orderId)
+    .maybeSingle();
+
+  return { shipment: data, error };
+}
+
+export async function createShipment(shipmentData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("shipments")
+    .insert(shipmentData)
+    .select()
+    .single();
+
+  return { shipment: data, error };
+}
+
+export async function updateShipment(id: string, updateData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("shipments")
+    .update(updateData)
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { shipment: data, error };
+}
+
+export async function deleteShipment(id: string) {
+  const { error } = await supabaseAdmin
+    .from("shipments")
+    .delete()
+    .eq("id", id);
+
+  return { error };
+}
+
+// ============================================================
+// INVOICES
+// ============================================================
+
+export async function getAdminInvoices() {
+  const { data, error } = await supabaseAdmin
+    .from("invoices")
+    .select("*, order:orders(order_number, guest_name)")
+    .order("created_at", { ascending: false });
+
+  return { invoices: data ?? [], error };
+}
+
+export async function getInvoiceByOrderId(orderId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("invoices")
+    .select("*")
+    .eq("order_id", orderId)
+    .maybeSingle();
+
+  return { invoice: data, error };
+}
+
+export async function createInvoice(invoiceData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("invoices")
+    .insert(invoiceData)
+    .select()
+    .single();
+
+  return { invoice: data, error };
+}
+
+// ============================================================
+// NOTIFICATION LOG
+// ============================================================
+
+export async function getNotificationLog(channel = "") {
+  let query = supabaseAdmin
+    .from("notification_log")
+    .select("*, order:orders(order_number)")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (channel) {
+    query = query.eq("channel", channel);
+  }
+
+  const { data, error } = await query;
+  return { notifications: data ?? [], error };
+}
+
+export async function createNotificationEntry(entry: {
+  order_id: string;
+  channel: "email" | "sms" | "whatsapp";
+  type: string;
+  status: "pending" | "sent" | "failed";
+  metadata?: Record<string, unknown>;
+}) {
+  const { data, error } = await supabaseAdmin
+    .from("notification_log")
+    .insert(entry)
+    .select()
+    .single();
+
+  return { notification: data, error };
+}

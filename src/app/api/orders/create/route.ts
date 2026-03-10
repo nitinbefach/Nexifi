@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { getStoreSettingsMap } from "@/lib/supabase/admin-queries";
+import { getStoreSettingsMap, createNotificationEntry } from "@/lib/supabase/admin-queries";
 import { createOrderSchema } from "@/validators/order.schema";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -193,6 +193,15 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Log notification entry (fire and forget)
+    await createNotificationEntry({
+      order_id: result.order_id,
+      channel: "email",
+      type: "order_confirmation",
+      status: "pending",
+      metadata: { guest_email: guest_email, order_number: result.order_number },
+    }).catch(() => {});
 
     return NextResponse.json({
       order_id: result.order_id,
