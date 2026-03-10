@@ -1,9 +1,22 @@
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductGrid from "@/components/storefront/ProductGrid";
 import { getProducts, getCategories, toCardProduct } from "@/lib/supabase/queries";
 import ProductsClient from "./ProductsClient";
+
+export const metadata: Metadata = {
+  title: "All Products",
+  description:
+    "Browse electronics, gadgets, toys, and home appliances at wholesale prices. Fast delivery across India.",
+  openGraph: {
+    title: "All Products — NEXIFI",
+    description:
+      "Browse electronics, gadgets, toys, and home appliances at wholesale prices. Fast delivery across India.",
+    url: "/products",
+  },
+};
 
 interface ProductsPageProps {
   searchParams: Promise<{

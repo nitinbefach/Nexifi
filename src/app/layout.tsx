@@ -17,6 +17,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://nexifi.in";
+
 export const metadata: Metadata = {
   title: {
     default: "NEXIFI — Next is Now | Wholesale Prices on Electronics & Gadgets",
@@ -24,6 +26,28 @@ export const metadata: Metadata = {
   },
   description:
     "Shop electronics, gadgets, toys, and home appliances at wholesale prices with fast delivery across India. NEXIFI — Next is Now.",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: "website",
+    siteName: "NEXIFI",
+    locale: "en_IN",
+    url: siteUrl,
+    title: "NEXIFI — Next is Now",
+    description:
+      "Shop electronics, gadgets, toys, and home appliances at wholesale prices with fast delivery across India.",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "NEXIFI — Next is Now" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NEXIFI — Next is Now",
+    description:
+      "Shop electronics, gadgets, toys, and home appliances at wholesale prices with fast delivery across India.",
+    images: ["/og-default.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

@@ -43,9 +43,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect /admin routes — redirect if not authenticated or not admin
-  if (pathname.startsWith("/admin")) {
+  // Protect /admin pages and /api/admin routes
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
+
+  if (isAdminPage || isAdminApi) {
     if (!user) {
+      if (isAdminApi) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
       return NextResponse.redirect(new URL("/login", request.url));
     }
     const { data: profile } = await supabase
@@ -55,6 +61,9 @@ export async function middleware(request: NextRequest) {
       .single();
 
     if (profile?.role !== "admin") {
+      if (isAdminApi) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
@@ -63,5 +72,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/login"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/login"],
 };

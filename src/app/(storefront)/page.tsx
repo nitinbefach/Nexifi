@@ -1,6 +1,17 @@
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowRight, Truck, Shield, Headphones, RotateCcw } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "NEXIFI — Next is Now | Wholesale Prices on Electronics & Gadgets",
+  openGraph: {
+    title: "NEXIFI — Next is Now",
+    description:
+      "Shop electronics, gadgets, toys, and home appliances at wholesale prices with fast delivery across India.",
+    url: "/",
+  },
+};
 import HeroBanner from "@/components/storefront/HeroBanner";
 import CategoryGrid from "@/components/storefront/CategoryGrid";
 import ProductGrid from "@/components/storefront/ProductGrid";
