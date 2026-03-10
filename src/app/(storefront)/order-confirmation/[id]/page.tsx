@@ -148,7 +148,15 @@ export default async function OrderConfirmationPage({
       </div>
 
       {/* CTA */}
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        {order && (
+          <Link
+            href={`/track-order?order=${encodeURIComponent(order.order_number)}`}
+            className="rounded-lg border border-nexifi-orange px-8 py-2.5 text-sm font-semibold text-nexifi-orange transition-colors hover:bg-nexifi-orange/5"
+          >
+            Track Your Order
+          </Link>
+        )}
         <Link
           href="/products"
           className="rounded-lg bg-nexifi-orange px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-nexifi-orange-dark"
