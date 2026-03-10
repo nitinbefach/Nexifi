@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
 
     // GST on (subtotal - discount)
     const taxableAmount = subtotal - discountAmount;
-    const gstAmount = Math.round((taxableAmount * GST_PERCENT) / 100 * 100) / 100;
+    const gstAmount = Math.round(((taxableAmount * GST_PERCENT) / 100) * 100) / 100;
 
     // Total
     const totalAmount =

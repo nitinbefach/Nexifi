@@ -2,19 +2,23 @@ import React from "react";
 import Link from "next/link";
 import { CheckCircle, Package, Truck, Clock } from "lucide-react";
 import { formatINR } from "@/lib/utils";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 interface OrderConfirmationPageProps {
   params: Promise<{ id: string }>;
 }
 
 async function getOrder(orderNumber: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/orders/${orderNumber}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.order;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderNumber);
+  const column = isUuid ? "id" : "order_number";
+
+  const { data: order } = await supabaseAdmin
+    .from("orders")
+    .select("*, items:order_items(*)")
+    .eq(column, orderNumber)
+    .single();
+
+  return order;
 }
 
 export default async function OrderConfirmationPage({

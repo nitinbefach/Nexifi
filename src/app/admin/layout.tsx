@@ -29,10 +29,15 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loading, isAdmin, profile, signOut } = useAuth();
+  const { loading, profile, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Show loading spinner while checking auth
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+  };
+
+  // Brief loading while AuthContext initializes (middleware already verified admin access)
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -43,17 +48,6 @@ export default function AdminLayout({
       </div>
     );
   }
-
-  // Redirect non-admin users to login
-  if (!isAdmin) {
-    router.push("/login");
-    return null;
-  }
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/login");
-  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">

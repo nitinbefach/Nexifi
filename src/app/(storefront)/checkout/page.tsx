@@ -56,7 +56,7 @@ export default function CheckoutPage() {
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
   const codCharge = paymentMethod === "cod" ? COD_CHARGE : 0;
   const taxableAmount = subtotal - discountAmount;
-  const gstAmount = Math.round((taxableAmount * GST_PERCENT) / 100 * 100) / 100;
+  const gstAmount = Math.round(((taxableAmount * GST_PERCENT) / 100) * 100) / 100;
   const total = Math.round((subtotal - discountAmount + shipping + codCharge + gstAmount) * 100) / 100;
 
   // Validate address step
