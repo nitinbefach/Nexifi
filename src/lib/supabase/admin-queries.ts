@@ -317,3 +317,122 @@ export async function getAdminCustomers() {
 
   return { customers, error: null };
 }
+
+// ============================================================
+// COUPONS
+// ============================================================
+
+export async function getAdminCoupons() {
+  const { data, error } = await supabaseAdmin
+    .from("coupons")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  return { coupons: data ?? [], error };
+}
+
+export async function createCoupon(couponData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("coupons")
+    .insert(couponData)
+    .select()
+    .single();
+
+  return { coupon: data, error };
+}
+
+export async function updateCoupon(id: string, updateData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("coupons")
+    .update(updateData)
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { coupon: data, error };
+}
+
+export async function deleteCoupon(id: string) {
+  const { error } = await supabaseAdmin
+    .from("coupons")
+    .delete()
+    .eq("id", id);
+
+  return { error };
+}
+
+// ============================================================
+// BANNERS
+// ============================================================
+
+export async function getAdminBanners() {
+  const { data, error } = await supabaseAdmin
+    .from("banners")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  return { banners: data ?? [], error };
+}
+
+export async function createBanner(bannerData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("banners")
+    .insert(bannerData)
+    .select()
+    .single();
+
+  return { banner: data, error };
+}
+
+export async function updateBanner(id: string, updateData: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from("banners")
+    .update(updateData)
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { banner: data, error };
+}
+
+export async function deleteBanner(id: string) {
+  const { error } = await supabaseAdmin
+    .from("banners")
+    .delete()
+    .eq("id", id);
+
+  return { error };
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+
+export async function getAdminReviews() {
+  const { data, error } = await supabaseAdmin
+    .from("reviews")
+    .select("*, product:products(name)")
+    .order("created_at", { ascending: false });
+
+  return { reviews: data ?? [], error };
+}
+
+export async function updateReviewStatus(id: string, isApproved: boolean) {
+  const { data, error } = await supabaseAdmin
+    .from("reviews")
+    .update({ is_approved: isApproved })
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { review: data, error };
+}
+
+export async function deleteReview(id: string) {
+  const { error } = await supabaseAdmin
+    .from("reviews")
+    .delete()
+    .eq("id", id);
+
+  return { error };
+}
