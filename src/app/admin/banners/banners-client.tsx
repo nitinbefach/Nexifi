@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Loader2, Image as ImageIcon } from "lucide-react";
+import { useRef, useState } from "react";
+import { Plus, Pencil, Trash2, X, Loader2, Image as ImageIcon, Upload } from "lucide-react";
 
 interface Banner {
   id: string;
@@ -23,6 +23,9 @@ export default function BannersClient({ initialBanners }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState<"desktop" | "mobile" | null>(null);
+  const desktopFileRef = useRef<HTMLInputElement>(null);
+  const mobileFileRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -60,6 +63,47 @@ export default function BannersClient({ initialBanners }: Props) {
     resetForm();
     setFormSortOrder(banners.length + 1);
     setShowAdd(true);
+  };
+
+  const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    target: "desktop" | "mobile"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(target);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+
+      const { url } = await res.json();
+
+      if (target === "desktop") {
+        setFormImageUrl(url);
+      } else {
+        setFormMobileImageUrl(url);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(null);
+      // Reset input so same file can be re-selected
+      if (target === "desktop" && desktopFileRef.current) desktopFileRef.current.value = "";
+      if (target === "mobile" && mobileFileRef.current) mobileFileRef.current.value = "";
+    }
   };
 
   const handleSave = async () => {
@@ -163,27 +207,73 @@ export default function BannersClient({ initialBanners }: Props) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            {/* Desktop Image */}
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
-                Desktop Image URL <span className="text-red-500">*</span>
+                Desktop Image <span className="text-red-500">*</span>
               </label>
+              <div className="mt-1 flex gap-2">
+                <input
+                  value={formImageUrl}
+                  onChange={(e) => setFormImageUrl(e.target.value)}
+                  placeholder="https://example.com/banner.jpg"
+                  className="flex-1 rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                />
+                <button
+                  type="button"
+                  onClick={() => desktopFileRef.current?.click()}
+                  disabled={uploading === "desktop"}
+                  className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {uploading === "desktop" ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Upload className="size-4" />
+                  )}
+                  Upload
+                </button>
+              </div>
               <input
-                value={formImageUrl}
-                onChange={(e) => setFormImageUrl(e.target.value)}
-                placeholder="https://example.com/banner.jpg"
-                className="mt-1 w-full rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                ref={desktopFileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => handleFileUpload(e, "desktop")}
+                className="hidden"
               />
             </div>
 
+            {/* Mobile Image */}
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
-                Mobile Image URL <span className="text-xs text-gray-400">(optional)</span>
+                Mobile Image <span className="text-xs text-gray-400">(optional)</span>
               </label>
+              <div className="mt-1 flex gap-2">
+                <input
+                  value={formMobileImageUrl}
+                  onChange={(e) => setFormMobileImageUrl(e.target.value)}
+                  placeholder="https://example.com/banner-mobile.jpg"
+                  className="flex-1 rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                />
+                <button
+                  type="button"
+                  onClick={() => mobileFileRef.current?.click()}
+                  disabled={uploading === "mobile"}
+                  className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {uploading === "mobile" ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Upload className="size-4" />
+                  )}
+                  Upload
+                </button>
+              </div>
               <input
-                value={formMobileImageUrl}
-                onChange={(e) => setFormMobileImageUrl(e.target.value)}
-                placeholder="https://example.com/banner-mobile.jpg"
-                className="mt-1 w-full rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                ref={mobileFileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => handleFileUpload(e, "mobile")}
+                className="hidden"
               />
             </div>
 
