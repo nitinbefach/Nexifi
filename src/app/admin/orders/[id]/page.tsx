@@ -1,9 +1,9 @@
-import { getAdminOrderById } from "@/lib/supabase/admin-queries";
+import { getAdminOrderById, getShipmentByOrderId, getInvoiceByOrderId, getAdminReturns } from "@/lib/supabase/admin-queries";
 import { formatINR } from "@/lib/utils";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
 import OrderStatusUpdater from "./order-status-updater";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Truck, FileText, RotateCcw, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function AdminOrderDetailPage({
@@ -12,7 +12,12 @@ export default async function AdminOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { order } = await getAdminOrderById(id);
+  const [{ order }, { shipment }, { invoice }, { returns }] = await Promise.all([
+    getAdminOrderById(id),
+    getShipmentByOrderId(id),
+    getInvoiceByOrderId(id),
+    getAdminReturns().then((r) => ({ returns: r.returns.filter((ret: { order_id: string }) => ret.order_id === id) })),
+  ]);
 
   if (!order) notFound();
 
@@ -118,6 +123,90 @@ export default async function AdminOrderDetailPage({
               </div>
             </div>
           </div>
+
+          {/* Shipment Info */}
+          <div className="rounded-lg bg-white p-6 shadow">
+            <div className="flex items-center gap-2">
+              <Truck className="size-4 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-900">Shipment</h3>
+            </div>
+            {shipment ? (
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">AWB Number</span>
+                  <span className="font-mono font-medium">{shipment.awb_number}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Courier</span>
+                  <span>{shipment.courier_name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Status</span>
+                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                    {shipment.status || "pending"}
+                  </span>
+                </div>
+                {shipment.estimated_delivery && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Est. Delivery</span>
+                    <span>{new Date(shipment.estimated_delivery).toLocaleDateString("en-IN")}</span>
+                  </div>
+                )}
+                {shipment.tracking_url && (
+                  <a
+                    href={shipment.tracking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-nexifi-orange hover:underline"
+                  >
+                    Track Shipment <ExternalLink className="size-3" />
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p className="mt-3 text-sm text-gray-400">
+                No shipment created.{" "}
+                <Link href="/admin/shipping" className="text-nexifi-orange hover:underline">
+                  Create one
+                </Link>
+              </p>
+            )}
+          </div>
+
+          {/* Returns */}
+          {returns.length > 0 && (
+            <div className="rounded-lg bg-white p-6 shadow">
+              <div className="flex items-center gap-2">
+                <RotateCcw className="size-4 text-gray-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Return Requests</h3>
+              </div>
+              <div className="mt-3 space-y-2">
+                {returns.map((ret: { id: string; reason: string; status: string; created_at: string }) => (
+                  <Link
+                    key={ret.id}
+                    href={`/admin/returns/${ret.id}`}
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-gray-50"
+                  >
+                    <div>
+                      <span className="font-medium capitalize">{ret.reason.replace(/_/g, " ")}</span>
+                      <span className="ml-2 text-xs text-gray-400">
+                        {new Date(ret.created_at).toLocaleDateString("en-IN")}
+                      </span>
+                    </div>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      ret.status === "approved" || ret.status === "refunded"
+                        ? "bg-green-100 text-green-800"
+                        : ret.status === "rejected"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                    }`}>
+                      {ret.status}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column */}
@@ -177,6 +266,43 @@ export default async function AdminOrderDetailPage({
                   : "Online (PhonePe/UPI)"}
               </div>
             </div>
+          </div>
+
+          {/* Invoice */}
+          <div className="rounded-lg bg-white p-6 shadow">
+            <div className="flex items-center gap-2">
+              <FileText className="size-4 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-900">Invoice</h3>
+            </div>
+            {invoice ? (
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Invoice #</span>
+                  <span className="font-medium">{invoice.invoice_number}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Amount</span>
+                  <span className="font-medium">{formatINR(invoice.grand_total)}</span>
+                </div>
+                <a
+                  href={`/api/invoices/generate/${order.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-md border border-nexifi-orange px-4 py-2 text-sm font-medium text-nexifi-orange hover:bg-nexifi-orange/5"
+                >
+                  <FileText className="size-4" /> Download PDF
+                </a>
+              </div>
+            ) : (
+              <a
+                href={`/api/invoices/generate/${order.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-nexifi-orange px-4 py-2 text-sm font-medium text-white hover:bg-nexifi-orange-dark"
+              >
+                <FileText className="size-4" /> Generate Invoice
+              </a>
+            )}
           </div>
         </div>
       </div>
