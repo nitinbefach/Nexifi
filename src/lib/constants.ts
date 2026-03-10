@@ -3,10 +3,6 @@ export const SITE_CONFIG = {
   tagline: "Next is Now",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
-  codCharge: Number(process.env.NEXT_PUBLIC_COD_CHARGE) || 49,
-  freeShippingThreshold:
-    Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD) || 499,
-  gstPercent: Number(process.env.NEXT_PUBLIC_GST_PERCENT) || 18,
 };
 
 export const NAV_CATEGORIES = [

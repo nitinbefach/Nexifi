@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getStoreSettingsMap } from "@/lib/supabase/admin-queries";
 import { createOrderSchema } from "@/validators/order.schema";
-
-// Configuration from env
-const COD_CHARGE = Number(process.env.NEXT_PUBLIC_COD_CHARGE) || 49;
-const FREE_SHIPPING_THRESHOLD =
-  Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD) || 499;
-const GST_PERCENT = Number(process.env.NEXT_PUBLIC_GST_PERCENT) || 18;
-const COD_MAX_AMOUNT = 5000;
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +61,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Load store settings from DB
+    const settings = await getStoreSettingsMap();
+    const COD_CHARGE = Number(settings.cod_charge) || 49;
+    const FREE_SHIPPING_THRESHOLD = Number(settings.free_shipping_threshold) || 499;
+    const GST_PERCENT = Number(settings.gst_percent) || 18;
+    const COD_MAX_AMOUNT = Number(settings.cod_max_amount) || 5000;
+
     // 3. Calculate totals (use server-side prices, not client-sent)
     let subtotal = 0;
     const orderItems = items.map((item) => {
@@ -87,7 +88,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Shipping: free above threshold
-    const shippingCharge = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
+    const SHIPPING_CHARGE = Number(settings.shipping_charge) || 49;
+    const shippingCharge = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_CHARGE;
 
     // COD charge
     let codCharge = 0;
@@ -143,76 +145,51 @@ export async function POST(request: NextRequest) {
     const totalAmount =
       Math.round((subtotal - discountAmount + shippingCharge + codCharge + gstAmount) * 100) / 100;
 
-    // 4. Create order
-    const { data: order, error: orderError } = await supabaseAdmin
-      .from("orders")
-      .insert({
-        user_id: null, // guest checkout
-        status: "pending",
-        subtotal,
-        discount_amount: discountAmount,
-        shipping_charge: shippingCharge,
-        gst_amount: gstAmount,
-        total_amount: totalAmount,
-        coupon_code: coupon_code?.toUpperCase() || null,
-        payment_method,
-        payment_status: payment_method === "cod" ? "cod_pending" : "pending",
-        cod_charge: codCharge,
-        guest_name,
-        guest_email,
-        guest_phone,
-        shipping_address,
-        notes: notes || null,
-      })
-      .select("id, order_number")
-      .single();
+    // 4. Create order atomically (single transaction via RPC)
+    const { data: result, error: txError } = await supabaseAdmin.rpc(
+      "create_order_transaction",
+      {
+        p_order_data: {
+          subtotal,
+          discount_amount: discountAmount,
+          shipping_charge: shippingCharge,
+          gst_amount: gstAmount,
+          total_amount: totalAmount,
+          coupon_code: coupon_code?.toUpperCase() || null,
+          payment_method,
+          cod_charge: codCharge,
+          guest_name,
+          guest_email,
+          guest_phone,
+          shipping_address,
+          notes: notes || null,
+        },
+        p_items: orderItems,
+        p_coupon_code:
+          coupon_code && discountAmount > 0
+            ? coupon_code.toUpperCase()
+            : null,
+      }
+    );
 
-    if (orderError || !order) {
-      console.error("Order creation failed:", orderError?.message);
+    if (txError) {
+      console.error("Order transaction failed:", txError.message);
+      // Check for stock-related errors
+      if (txError.message?.includes("Insufficient stock")) {
+        return NextResponse.json(
+          { error: txError.message },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { error: "Failed to create order. Please try again." },
         { status: 500 }
       );
     }
 
-    // 5. Create order items
-    const itemsWithOrderId = orderItems.map((item) => ({
-      ...item,
-      order_id: order.id,
-    }));
-
-    const { error: itemsError } = await supabaseAdmin
-      .from("order_items")
-      .insert(itemsWithOrderId);
-
-    if (itemsError) {
-      console.error("Order items creation failed:", itemsError.message);
-      // Clean up the order if items fail
-      await supabaseAdmin.from("orders").delete().eq("id", order.id);
-      return NextResponse.json(
-        { error: "Failed to create order items. Please try again." },
-        { status: 500 }
-      );
-    }
-
-    // 6. Decrement stock
-    for (const item of items) {
-      await supabaseAdmin.rpc("decrement_stock", {
-        p_product_id: item.productId,
-        p_quantity: item.quantity,
-      });
-    }
-
-    // 7. Increment coupon usage (atomic via RPC)
-    if (coupon_code && discountAmount > 0) {
-      await supabaseAdmin.rpc("increment_coupon_usage", {
-        p_coupon_code: coupon_code.toUpperCase(),
-      });
-    }
-
     return NextResponse.json({
-      order_id: order.id,
-      order_number: order.order_number,
+      order_id: result.order_id,
+      order_number: result.order_number,
       total_amount: totalAmount,
     });
   } catch (error) {

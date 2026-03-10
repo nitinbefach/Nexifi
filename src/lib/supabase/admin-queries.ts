@@ -1,5 +1,46 @@
 import { supabaseAdmin } from "./admin";
 
+// ============================================================
+// STORE SETTINGS
+// ============================================================
+
+export type StoreSettingsValue = string | number | Record<string, string>;
+
+export interface StoreSettingsMap {
+  [key: string]: StoreSettingsValue;
+}
+
+export async function getStoreSettingsMap(): Promise<StoreSettingsMap> {
+  const { data, error } = await supabaseAdmin
+    .from("store_settings")
+    .select("key, value");
+
+  if (error || !data) return {};
+
+  const map: StoreSettingsMap = {};
+  for (const row of data) {
+    map[row.key] = row.value;
+  }
+  return map;
+}
+
+export async function updateStoreSettings(
+  settings: { key: string; value: unknown }[]
+) {
+  const errors: string[] = [];
+
+  for (const { key, value } of settings) {
+    const { error } = await supabaseAdmin
+      .from("store_settings")
+      .update({ value, updated_at: new Date().toISOString() })
+      .eq("key", key);
+
+    if (error) errors.push(`${key}: ${error.message}`);
+  }
+
+  return { error: errors.length > 0 ? errors.join("; ") : null };
+}
+
 const LOW_STOCK_THRESHOLD = 5;
 
 // ============================================================

@@ -8,18 +8,18 @@ Check off each item as it's completed.
 ## Critical (Must fix before launch)
 
 ### Backend / Data Integrity
-- [ ] **Transaction wrapping for orders** — Order insert + items insert + stock decrement are separate DB calls. Wrap in a single Supabase RPC function so partial failures don't create orphan data.
-- [ ] **Store settings from DB** — COD charge, GST %, free shipping threshold are currently env vars with hardcoded fallbacks. Move to `store_settings` table so admin can change without redeploy.
+- [x] **Transaction wrapping for orders** — Wrapped in single `create_order_transaction()` RPC function. All writes (order + items + stock + coupon) are atomic.
+- [x] **Store settings from DB** — Admin Settings page reads/writes `store_settings` table. Order API uses DB values instead of env vars.
 
 ### Payments
 - [ ] **PhonePe Business integration** — Currently stubbed (501). Need merchant credentials (MERCHANT_ID, SALT_KEY, SALT_INDEX) to wire up online payments.
 
 ### Notifications
-- [ ] **Order confirmation email** — Use Resend to send email on order placement (order number, items, total, shipping address).
-- [ ] **Order status update emails** — Notify customer when order is shipped/delivered.
+- [ ] **Order confirmation email** — Use Resend to send email on order placement. Deferred until Resend API key + domain configured.
+- [ ] **Order status update emails** — Notify customer when order is shipped/delivered. Deferred until Resend configured.
 
 ### Admin Panel
-- [ ] **Wire all admin pages to real Supabase data** — Currently all 13 admin pages show hardcoded mock data. Need to replace with real queries.
+- [x] **Wire all admin pages to real Supabase data** — All admin pages (Dashboard, Products, Categories, Orders, Customers, Settings) use real Supabase queries.
 
 ### Product Images
 - [ ] **Replace placeholder images** — All products use placehold.co images. Upload real product photos to Supabase Storage before launch.
@@ -35,10 +35,11 @@ Check off each item as it's completed.
 ### SEO & Performance
 - [ ] **Open Graph / meta tags** — Verify all pages have proper OG tags for social sharing.
 - [ ] **Image optimization** — Configure next/image for production CDN.
-- [ ] **Error pages** — Custom 404 and 500 pages with NEXIFI branding.
+- [x] **Error pages** — Custom 404 and 500 pages with NEXIFI branding.
+- [x] **Sitemap** — Dynamic sitemap includes all products, categories, and static pages.
 
 ### User Experience
-- [ ] **Order tracking page** — Allow customers to check order status by order number.
+- [x] **Order tracking page** — Customers can check order status at `/track-order` by entering order number.
 - [ ] **Mobile testing** — Full end-to-end testing on real mobile devices.
 
 ---
@@ -53,4 +54,4 @@ Check off each item as it's completed.
 
 ---
 
-*Last updated: Sprint 4 completion*
+*Last updated: Pre-launch fixes sprint*
