@@ -13,13 +13,22 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
   if (!product) return { title: "Product Not Found | NEXIFI" };
 
   const primaryImage = product.images?.find((img) => img.is_primary) ?? product.images?.[0];
+  const desc = product.description || `Buy ${product.name} at NEXIFI — Next is Now`;
   return {
     title: `${product.name} | NEXIFI`,
-    description: product.description || `Buy ${product.name} at NEXIFI — Next is Now`,
+    description: desc,
     openGraph: {
+      type: "website",
       title: product.name,
-      description: product.description || undefined,
+      description: desc,
+      url: `/products/${slug}`,
       images: primaryImage ? [{ url: primaryImage.image_url }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: desc,
+      images: primaryImage ? [primaryImage.image_url] : undefined,
     },
   };
 }

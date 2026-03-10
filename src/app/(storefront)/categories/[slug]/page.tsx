@@ -16,9 +16,16 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
   if (!category) return { title: "Category Not Found | NEXIFI" };
+  const desc = category.description || `Browse ${category.name} products at NEXIFI — Next is Now`;
   return {
     title: `${category.name} | NEXIFI`,
-    description: category.description || `Browse ${category.name} products at NEXIFI — Next is Now`,
+    description: desc,
+    openGraph: {
+      title: `${category.name} — NEXIFI`,
+      description: desc,
+      url: `/categories/${slug}`,
+      images: category.image_url ? [{ url: category.image_url }] : undefined,
+    },
   };
 }
 

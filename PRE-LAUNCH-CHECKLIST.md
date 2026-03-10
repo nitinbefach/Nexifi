@@ -29,12 +29,15 @@ Check off each item as it's completed.
 ## Important (Should fix before launch)
 
 ### Security
-- [ ] **Rate limiting on API routes** — Prevent abuse of order creation, coupon validation endpoints.
-- [ ] **CSRF protection** — Verify Next.js default protections are sufficient for API routes.
+- [x] **Rate limiting on API routes** — In-memory rate limiter on `/api/orders/create` (10/min) and `/api/coupons/validate` (20/min).
+- [x] **CSRF protection** — Verified: Next.js same-origin API routes + Supabase SameSite=Lax cookies are sufficient for guest checkout store.
+- [x] **Admin API auth** — Middleware now protects `/api/admin/*` routes (returns 401/403 JSON for unauthenticated/unauthorized requests).
+- [x] **Security headers** — X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy configured in next.config.ts.
+- [x] **robots.txt** — Blocks crawlers from /admin, /api, /checkout, /cart, /login, /order-confirmation.
 
 ### SEO & Performance
-- [ ] **Open Graph / meta tags** — Verify all pages have proper OG tags for social sharing.
-- [ ] **Image optimization** — Configure next/image for production CDN.
+- [x] **Open Graph / meta tags** — Root layout, homepage, products listing, product detail, and category pages have OG + Twitter Card metadata.
+- [x] **Image optimization** — All components use next/image. HeroBanner converted from plain img to next/image with responsive art direction.
 - [x] **Error pages** — Custom 404 and 500 pages with NEXIFI branding.
 - [x] **Sitemap** — Dynamic sitemap includes all products, categories, and static pages.
 
@@ -54,4 +57,4 @@ Check off each item as it's completed.
 
 ---
 
-*Last updated: Pre-launch fixes sprint*
+*Last updated: Pre-launch hardening sprint*

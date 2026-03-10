@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Banner } from "@/lib/supabase/queries";
 
 const fallbackSlides = [
@@ -57,16 +58,24 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
     <section className="relative w-full overflow-hidden">
       <Link href={slide.href} className="group/banner block">
         <div className="relative h-[180px] bg-neutral-900 sm:h-[250px] md:h-[420px] lg:h-[460px] xl:h-[500px]">
-          <picture>
-            <source media="(min-width: 768px)" srcSet={slide.desktop} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={slide.mobile}
-              alt={slide.alt}
-              className="size-full object-cover transition-all duration-700 group-hover/banner:brightness-[0.97]"
-              loading={current === 0 ? "eager" : "lazy"}
-            />
-          </picture>
+          {/* Mobile image */}
+          <Image
+            src={slide.mobile}
+            alt={slide.alt}
+            fill
+            sizes="100vw"
+            className="object-cover transition-all duration-700 group-hover/banner:brightness-[0.97] md:hidden"
+            priority={current === 0}
+          />
+          {/* Desktop image */}
+          <Image
+            src={slide.desktop}
+            alt={slide.alt}
+            fill
+            sizes="100vw"
+            className="hidden object-cover transition-all duration-700 group-hover/banner:brightness-[0.97] md:block"
+            priority={current === 0}
+          />
         </div>
       </Link>
 
