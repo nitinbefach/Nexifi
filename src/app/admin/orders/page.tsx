@@ -1,7 +1,21 @@
 import Link from "next/link";
 import { getAdminOrders } from "@/lib/supabase/admin-queries";
-import { formatINR } from "@/lib/utils";
+import { formatINR, cn } from "@/lib/utils";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
+import LinkButton from "@/components/admin/LinkButton";
+import AnimatedPage from "@/components/admin/AnimatedPage";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const STATUSES = ["", "pending", "confirmed", "shipped", "delivered", "cancelled"];
 
@@ -24,23 +38,27 @@ export default async function AdminOrdersPage({
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">Orders</h2>
-      <p className="mt-2 text-sm text-gray-500">
-        {total} order{total !== 1 ? "s" : ""}{status ? ` with status "${status}"` : ""}.
-      </p>
+    <AnimatedPage className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
+        <p className="text-sm text-muted-foreground">
+          {total} order{total !== 1 ? "s" : ""}
+          {status ? ` with status "${status}"` : ""}.
+        </p>
+      </div>
 
       {/* Status Filter */}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {STATUSES.map((s) => (
           <Link
             key={s || "all"}
             href={`/admin/orders${s ? `?status=${s}` : ""}`}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={cn(
+              "rounded-full px-3.5 py-1.5 text-xs font-medium capitalize transition-all",
               status === s
-                ? "bg-nexifi-orange text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+                ? "bg-nexifi-orange text-white shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+            )}
           >
             {s || "All"}
           </Link>
@@ -48,102 +66,109 @@ export default async function AdminOrdersPage({
       </div>
 
       {/* Orders Table */}
-      <div className="mt-4 overflow-hidden rounded-lg bg-white shadow">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
-                <th className="px-6 py-3">Order #</th>
-                <th className="px-6 py-3">Customer</th>
-                <th className="px-6 py-3">Date</th>
-                <th className="px-6 py-3">Total</th>
-                <th className="px-6 py-3">Payment</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order #</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {orders.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-gray-400">
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="py-10 text-center text-muted-foreground"
+                  >
                     No orders found.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-3 font-medium">
+                  <TableRow key={order.id} className="admin-table-row">
+                    <TableCell className="whitespace-nowrap font-medium">
                       <Link
                         href={`/admin/orders/${order.id}`}
                         className="hover:text-nexifi-orange hover:underline"
                       >
                         {order.order_number}
                       </Link>
-                    </td>
-                    <td className="px-6 py-3">
+                    </TableCell>
+                    <TableCell>
                       <Link href={`/admin/orders/${order.id}`} className="block">
-                        <p className="text-gray-900 hover:text-nexifi-orange">{order.guest_name}</p>
-                        <p className="text-xs text-gray-500">{order.guest_email}</p>
+                        <p className="hover:text-nexifi-orange">
+                          {order.guest_name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {order.guest_email}
+                        </p>
                       </Link>
-                    </td>
-                    <td className="px-6 py-3 text-gray-500">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       {new Date(order.created_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
-                    </td>
-                    <td className="px-6 py-3 font-medium">
+                    </TableCell>
+                    <TableCell className="font-medium">
                       {formatINR(order.total_amount)}
-                    </td>
-                    <td className="px-6 py-3 text-gray-600">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       {order.payment_method === "cod" ? "COD" : "Online"}
-                    </td>
-                    <td className="px-6 py-3">
+                    </TableCell>
+                    <TableCell>
                       <OrderStatusBadge status={order.status} />
-                    </td>
-                    <td className="px-6 py-3">
+                    </TableCell>
+                    <TableCell>
                       <Link
                         href={`/admin/orders/${order.id}`}
                         className="text-sm font-medium text-nexifi-orange hover:underline"
                       >
                         View
                       </Link>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t px-6 py-3">
-            <p className="text-xs text-gray-500">
-              Page {page} of {totalPages}
-            </p>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/admin/orders?page=${page - 1}${status ? `&status=${status}` : ""}`}
-                  className="rounded border px-3 py-1 text-xs hover:bg-gray-50"
-                >
-                  Previous
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={`/admin/orders?page=${page + 1}${status ? `&status=${status}` : ""}`}
-                  className="rounded border px-3 py-1 text-xs hover:bg-gray-50"
-                >
-                  Next
-                </Link>
-              )}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t px-4 py-3">
+              <p className="text-xs text-muted-foreground">
+                Page {page} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                {page > 1 && (
+                  <LinkButton
+                    href={`/admin/orders?page=${page - 1}${status ? `&status=${status}` : ""}`}
+                    size="xs"
+                  >
+                    Previous
+                  </LinkButton>
+                )}
+                {page < totalPages && (
+                  <LinkButton
+                    href={`/admin/orders?page=${page + 1}${status ? `&status=${status}` : ""}`}
+                    size="xs"
+                  >
+                    Next
+                  </LinkButton>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+    </AnimatedPage>
   );
 }

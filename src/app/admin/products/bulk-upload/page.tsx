@@ -1,10 +1,10 @@
 export default function BulkUploadPage() {
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight">
         Bulk Upload Products
-      </h2>
-      <p className="mt-2 text-sm text-gray-500">
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground">
         Upload a CSV or Excel file to add multiple products to your NEXIFI store
         at once. Download the template to ensure your file is formatted
         correctly.
@@ -12,23 +12,23 @@ export default function BulkUploadPage() {
 
       <div className="mt-6 max-w-2xl space-y-6">
         {/* Template Download */}
-        <div className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+        <div className="bg-card rounded-lg shadow p-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm font-medium">
               Download Template
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Use this CSV template to format your product data
             </p>
           </div>
-          <button className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">
+          <button className="px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground hover:bg-muted">
             Download
           </button>
         </div>
 
         {/* Dropzone Placeholder */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400">
+        <div className="bg-card rounded-lg shadow p-6">
+          <div className="h-48 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground">
             <svg
               className="h-10 w-10 mb-3"
               fill="none"

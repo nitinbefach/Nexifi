@@ -13,11 +13,11 @@ const statusColors: Record<string, string> = {
   shipped: "bg-purple-100 text-purple-800",
   delivered: "bg-green-100 text-green-800",
   cancelled: "bg-red-100 text-red-800",
-  returned: "bg-gray-100 text-gray-800",
+  returned: "bg-muted text-muted-foreground",
 };
 
 export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
-  const colorClass = statusColors[status.toLowerCase()] ?? "bg-gray-100 text-gray-800";
+  const colorClass = statusColors[status.toLowerCase()] ?? "bg-muted text-muted-foreground";
 
   return (
     <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${colorClass}`}>

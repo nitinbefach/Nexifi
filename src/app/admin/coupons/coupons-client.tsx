@@ -168,8 +168,8 @@ export default function CouponsClient({ initialCoupons }: Props) {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Coupons</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Coupons</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             {coupons.length} coupon{coupons.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -189,19 +189,19 @@ export default function CouponsClient({ initialCoupons }: Props) {
 
       {/* Inline Form */}
       {showForm && (
-        <div className="mt-4 rounded-lg bg-white p-5 shadow">
+        <div className="mt-4 rounded-lg bg-card p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-foreground">
               {editingId ? "Edit Coupon" : "New Coupon"}
             </h3>
-            <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+            <button onClick={resetForm} className="text-muted-foreground hover:text-muted-foreground">
               <X className="size-5" />
             </button>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Code</label>
+              <label className="block text-sm font-medium text-foreground">Code</label>
               <input
                 value={formCode}
                 onChange={(e) => setFormCode(e.target.value.toUpperCase())}
@@ -211,7 +211,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Discount Type</label>
+              <label className="block text-sm font-medium text-foreground">Discount Type</label>
               <select
                 value={formDiscountType}
                 onChange={(e) => setFormDiscountType(e.target.value as "percentage" | "fixed")}
@@ -223,7 +223,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-foreground">
                 Discount Value {formDiscountType === "percentage" ? "(%)" : "(₹)"}
               </label>
               <input
@@ -236,7 +236,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Min Order Amount (₹)</label>
+              <label className="block text-sm font-medium text-foreground">Min Order Amount (₹)</label>
               <input
                 type="number"
                 value={formMinOrder}
@@ -247,7 +247,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Max Discount (₹)</label>
+              <label className="block text-sm font-medium text-foreground">Max Discount (₹)</label>
               <input
                 type="number"
                 value={formMaxDiscount}
@@ -258,7 +258,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Usage Limit</label>
+              <label className="block text-sm font-medium text-foreground">Usage Limit</label>
               <input
                 type="number"
                 value={formUsageLimit}
@@ -269,7 +269,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Valid From</label>
+              <label className="block text-sm font-medium text-foreground">Valid From</label>
               <input
                 type="datetime-local"
                 value={formValidFrom}
@@ -279,7 +279,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Valid Until</label>
+              <label className="block text-sm font-medium text-foreground">Valid Until</label>
               <input
                 type="datetime-local"
                 value={formValidUntil}
@@ -289,7 +289,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             </div>
 
             <div className="sm:col-span-2 lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-foreground">Description</label>
               <input
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
@@ -305,7 +305,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
                 type="checkbox"
                 checked={formIsActive}
                 onChange={(e) => setFormIsActive(e.target.checked)}
-                className="rounded border-gray-300 text-nexifi-orange focus:ring-nexifi-orange"
+                className="rounded border-border text-nexifi-orange focus:ring-nexifi-orange"
               />
               Active
             </label>
@@ -313,7 +313,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
             <div className="flex gap-2">
               <button
                 onClick={resetForm}
-                className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-md border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Cancel
               </button>
@@ -331,11 +331,11 @@ export default function CouponsClient({ initialCoupons }: Props) {
       )}
 
       {/* Coupon Table */}
-      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow">
+      <div className="mt-6 overflow-hidden rounded-lg bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+              <tr className="border-b bg-muted text-left text-xs font-medium uppercase text-muted-foreground">
                 <th className="px-5 py-3">Code</th>
                 <th className="px-5 py-3">Discount</th>
                 <th className="px-5 py-3">Min Order</th>
@@ -348,13 +348,13 @@ export default function CouponsClient({ initialCoupons }: Props) {
             <tbody className="divide-y">
               {coupons.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-gray-400">
+                  <td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">
                     No coupons yet. Create one to get started.
                   </td>
                 </tr>
               ) : (
                 coupons.map((c) => (
-                  <tr key={c.id} className="hover:bg-gray-50">
+                  <tr key={c.id} className="hover:bg-muted">
                     <td className="px-5 py-3">
                       <button
                         onClick={() => startEdit(c)}
@@ -363,31 +363,31 @@ export default function CouponsClient({ initialCoupons }: Props) {
                         {c.code}
                       </button>
                       {c.description && (
-                        <p className="mt-0.5 text-xs text-gray-400">{c.description}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{c.description}</p>
                       )}
                     </td>
                     <td className="px-5 py-3 font-medium">
                       {formatDiscount(c)}
                       {c.max_discount_amount && c.discount_type === "percentage" && (
-                        <span className="ml-1 text-xs text-gray-400">
+                        <span className="ml-1 text-xs text-muted-foreground">
                           (max {formatINR(c.max_discount_amount)})
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-gray-600">
+                    <td className="px-5 py-3 text-muted-foreground">
                       {c.min_order_amount > 0 ? formatINR(c.min_order_amount) : "—"}
                     </td>
-                    <td className="px-5 py-3 text-gray-600">
+                    <td className="px-5 py-3 text-muted-foreground">
                       {c.used_count}{c.usage_limit ? ` / ${c.usage_limit}` : ""}
                     </td>
-                    <td className="px-5 py-3 text-xs text-gray-500">
+                    <td className="px-5 py-3 text-xs text-muted-foreground">
                       {formatDate(c.valid_from)} — {formatDate(c.valid_until)}
                     </td>
                     <td className="px-5 py-3">
                       <span
                         className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                           !c.is_active || isExpired(c)
-                            ? "bg-gray-100 text-gray-600"
+                            ? "bg-muted text-muted-foreground"
                             : "bg-green-100 text-green-800"
                         }`}
                       >
@@ -398,14 +398,14 @@ export default function CouponsClient({ initialCoupons }: Props) {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => startEdit(c)}
-                          className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                           title="Edit"
                         >
                           <Pencil className="size-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
-                          className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                          className="rounded p-1 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                           title="Delete"
                         >
                           <Trash2 className="size-4" />

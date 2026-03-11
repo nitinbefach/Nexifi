@@ -164,8 +164,8 @@ export default function ShippingClient({ initialShipments }: Props) {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Shipments</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Shipments</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             {shipments.length} shipment{shipments.length !== 1 ? "s" : ""} — track and manage order deliveries.
           </p>
         </div>
@@ -185,12 +185,12 @@ export default function ShippingClient({ initialShipments }: Props) {
 
       {/* Inline Form */}
       {showForm && (
-        <div className="mt-4 rounded-lg bg-white p-5 shadow">
+        <div className="mt-4 rounded-lg bg-card p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-foreground">
               {editingId ? "Edit Shipment" : "New Shipment"}
             </h3>
-            <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+            <button onClick={resetForm} className="text-muted-foreground hover:text-muted-foreground">
               <X className="size-5" />
             </button>
           </div>
@@ -198,7 +198,7 @@ export default function ShippingClient({ initialShipments }: Props) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {!editingId && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-foreground">
                   Order ID <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -211,7 +211,7 @@ export default function ShippingClient({ initialShipments }: Props) {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-foreground">
                 AWB Number <span className="text-red-500">*</span>
               </label>
               <input
@@ -223,7 +223,7 @@ export default function ShippingClient({ initialShipments }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-foreground">
                 Courier Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -235,7 +235,7 @@ export default function ShippingClient({ initialShipments }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Tracking URL</label>
+              <label className="block text-sm font-medium text-foreground">Tracking URL</label>
               <input
                 value={formTrackingUrl}
                 onChange={(e) => setFormTrackingUrl(e.target.value)}
@@ -245,7 +245,7 @@ export default function ShippingClient({ initialShipments }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Estimated Delivery</label>
+              <label className="block text-sm font-medium text-foreground">Estimated Delivery</label>
               <input
                 type="date"
                 value={formEstimatedDelivery}
@@ -255,7 +255,7 @@ export default function ShippingClient({ initialShipments }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Weight (kg)</label>
+              <label className="block text-sm font-medium text-foreground">Weight (kg)</label>
               <input
                 type="number"
                 step="0.1"
@@ -268,7 +268,7 @@ export default function ShippingClient({ initialShipments }: Props) {
 
             {editingId && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <label className="block text-sm font-medium text-foreground">Status</label>
                 <select
                   value={formStatus}
                   onChange={(e) => setFormStatus(e.target.value)}
@@ -286,7 +286,7 @@ export default function ShippingClient({ initialShipments }: Props) {
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={resetForm}
-              className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-md border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >
               Cancel
             </button>
@@ -303,11 +303,11 @@ export default function ShippingClient({ initialShipments }: Props) {
       )}
 
       {/* Shipments Table */}
-      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow">
+      <div className="mt-6 overflow-hidden rounded-lg bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+              <tr className="border-b bg-muted text-left text-xs font-medium uppercase text-muted-foreground">
                 <th className="px-5 py-3">Order</th>
                 <th className="px-5 py-3">AWB Number</th>
                 <th className="px-5 py-3">Courier</th>
@@ -322,31 +322,31 @@ export default function ShippingClient({ initialShipments }: Props) {
               {shipments.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-5 py-16 text-center">
-                    <Truck className="mx-auto size-10 text-gray-300" />
-                    <p className="mt-3 text-sm text-gray-400">
+                    <Truck className="mx-auto size-10 text-muted-foreground" />
+                    <p className="mt-3 text-sm text-muted-foreground">
                       No shipments yet. Add one to start tracking deliveries.
                     </p>
                   </td>
                 </tr>
               ) : (
                 shipments.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50">
+                  <tr key={s.id} className="hover:bg-muted">
                     <td className="px-5 py-3">
                       <span className="font-mono text-nexifi-orange">
                         {s.order?.order_number || "—"}
                       </span>
                       {s.order?.guest_name && (
-                        <p className="mt-0.5 text-xs text-gray-400">{s.order.guest_name}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{s.order.guest_name}</p>
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      <span className="font-mono font-medium text-gray-900">{s.awb_number}</span>
+                      <span className="font-mono font-medium text-foreground">{s.awb_number}</span>
                     </td>
-                    <td className="px-5 py-3 text-gray-600">{s.courier_name}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{s.courier_name}</td>
                     <td className="px-5 py-3">
                       <span
                         className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                          STATUS_STYLES[s.status] || "bg-gray-100 text-gray-600"
+                          STATUS_STYLES[s.status] || "bg-muted text-muted-foreground"
                         }`}
                       >
                         {STATUS_LABELS[s.status] || s.status}
@@ -363,27 +363,27 @@ export default function ShippingClient({ initialShipments }: Props) {
                           Track <ExternalLink className="size-3" />
                         </a>
                       ) : (
-                        <span className="text-xs text-gray-400">—</span>
+                        <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">
+                    <td className="px-5 py-3 text-muted-foreground">
                       {formatDate(s.estimated_delivery)}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">
+                    <td className="px-5 py-3 text-muted-foreground">
                       {formatDate(s.created_at)}
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => startEdit(s)}
-                          className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                           title="Edit"
                         >
                           <Pencil className="size-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(s.id)}
-                          className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                          className="rounded p-1 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                           title="Delete"
                         >
                           <Trash2 className="size-4" />

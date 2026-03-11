@@ -65,7 +65,7 @@ const STATUS_STYLES: Record<ReturnStatus, string> = {
   rejected: "bg-red-100 text-red-800",
   pickup_scheduled: "bg-blue-100 text-blue-800",
   received: "bg-purple-100 text-purple-800",
-  refunded: "bg-gray-100 text-gray-800",
+  refunded: "bg-muted text-foreground",
 };
 
 function getReasonLabel(reason: string): string {
@@ -131,15 +131,15 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
       <div className="flex items-center gap-3">
         <Link
           href="/admin/returns"
-          className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
         >
           <ArrowLeft className="size-5" />
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-foreground">
             Return Request
           </h2>
-          <p className="mt-0.5 text-sm text-gray-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Order {returnReq.order?.order_number || "N/A"} — {returnReq.order?.guest_name || "Unknown"}
           </p>
         </div>
@@ -163,11 +163,11 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
         {/* Left Column — Details */}
         <div className="space-y-6 lg:col-span-2">
           {/* Returned Item */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-medium text-gray-700">Returned Item</h3>
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-medium text-foreground">Returned Item</h3>
             {returnedItem ? (
-              <div className="mt-3 flex items-center gap-4 rounded border border-gray-100 p-3">
-                <div className="flex size-16 shrink-0 items-center justify-center rounded bg-gray-100 text-xs text-gray-400">
+              <div className="mt-3 flex items-center gap-4 rounded border border-border p-3">
+                <div className="flex size-16 shrink-0 items-center justify-center rounded bg-muted text-xs text-muted-foreground">
                   {returnedItem.product_image ? (
                     <Image
                       src={returnedItem.product_image}
@@ -181,39 +181,39 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-foreground">
                     {returnedItem.product_name}
                   </p>
-                  <p className="text-xs text-gray-500">Qty: {returnedItem.quantity}</p>
+                  <p className="text-xs text-muted-foreground">Qty: {returnedItem.quantity}</p>
                 </div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {formatINR(returnedItem.total_price)}
                 </p>
               </div>
             ) : (
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-muted-foreground">
                 Item details not available.
               </p>
             )}
           </div>
 
           {/* Reason & Description */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-medium text-gray-700">Return Reason</h3>
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-medium text-foreground">Return Reason</h3>
             <p className="mt-2 inline-block rounded bg-orange-50 px-2 py-0.5 text-sm font-medium text-nexifi-orange">
               {getReasonLabel(returnReq.reason)}
             </p>
 
-            <h3 className="mt-4 text-sm font-medium text-gray-700">Customer Description</h3>
-            <p className="mt-2 text-sm text-gray-600">
+            <h3 className="mt-4 text-sm font-medium text-foreground">Customer Description</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
               {returnReq.description || "No description provided."}
             </p>
           </div>
 
           {/* Customer Images */}
           {returnReq.images && returnReq.images.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h3 className="text-sm font-medium text-gray-700">Customer Images</h3>
+            <div className="rounded-lg bg-card p-6 shadow">
+              <h3 className="text-sm font-medium text-foreground">Customer Images</h3>
               <div className="mt-3 flex flex-wrap gap-3">
                 {returnReq.images.map((img, i) => (
                   <a
@@ -238,17 +238,17 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
 
           {/* Customer Info */}
           {returnReq.order && (
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h3 className="text-sm font-medium text-gray-700">Customer Info</h3>
-              <div className="mt-3 space-y-1 text-sm text-gray-600">
-                <p><span className="font-medium text-gray-900">Name:</span> {returnReq.order.guest_name}</p>
-                <p><span className="font-medium text-gray-900">Email:</span> {returnReq.order.guest_email}</p>
+            <div className="rounded-lg bg-card p-6 shadow">
+              <h3 className="text-sm font-medium text-foreground">Customer Info</h3>
+              <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                <p><span className="font-medium text-foreground">Name:</span> {returnReq.order.guest_name}</p>
+                <p><span className="font-medium text-foreground">Email:</span> {returnReq.order.guest_email}</p>
                 {returnReq.order.guest_phone && (
-                  <p><span className="font-medium text-gray-900">Phone:</span> {returnReq.order.guest_phone}</p>
+                  <p><span className="font-medium text-foreground">Phone:</span> {returnReq.order.guest_phone}</p>
                 )}
                 {returnReq.order.shipping_address && (
                   <p>
-                    <span className="font-medium text-gray-900">Address:</span>{" "}
+                    <span className="font-medium text-foreground">Address:</span>{" "}
                     {returnReq.order.shipping_address.address_line1}
                     {returnReq.order.shipping_address.address_line2
                       ? `, ${returnReq.order.shipping_address.address_line2}`
@@ -265,16 +265,16 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
 
         {/* Right Column — Action Panel */}
         <div className="space-y-6">
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-medium text-gray-700">Update Status</h3>
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-medium text-foreground">Update Status</h3>
 
             {/* Status Dropdown */}
             <div className="mt-3">
-              <label className="block text-xs font-medium text-gray-500">Status</label>
+              <label className="block text-xs font-medium text-muted-foreground">Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ReturnStatus)}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
               >
                 {STATUS_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -286,7 +286,7 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
 
             {/* Refund Amount */}
             <div className="mt-4">
-              <label className="block text-xs font-medium text-gray-500">
+              <label className="block text-xs font-medium text-muted-foreground">
                 Refund Amount (Rs.)
               </label>
               <input
@@ -296,19 +296,19 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(e.target.value)}
                 placeholder="0.00"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
               />
             </div>
 
             {/* Admin Notes */}
             <div className="mt-4">
-              <label className="block text-xs font-medium text-gray-500">Admin Notes</label>
+              <label className="block text-xs font-medium text-muted-foreground">Admin Notes</label>
               <textarea
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows={4}
                 placeholder="Internal notes about this return..."
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
               />
             </div>
 
@@ -328,11 +328,11 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
           </div>
 
           {/* Timeline Info */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-medium text-gray-700">Timeline</h3>
-            <div className="mt-3 space-y-2 text-sm text-gray-600">
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-medium text-foreground">Timeline</h3>
+            <div className="mt-3 space-y-2 text-sm text-muted-foreground">
               <p>
-                <span className="font-medium text-gray-900">Submitted:</span>{" "}
+                <span className="font-medium text-foreground">Submitted:</span>{" "}
                 {new Date(returnReq.created_at).toLocaleString("en-IN", {
                   day: "numeric",
                   month: "short",
@@ -342,7 +342,7 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
                 })}
               </p>
               <p>
-                <span className="font-medium text-gray-900">Last Updated:</span>{" "}
+                <span className="font-medium text-foreground">Last Updated:</span>{" "}
                 {new Date(returnReq.updated_at).toLocaleString("en-IN", {
                   day: "numeric",
                   month: "short",
@@ -353,7 +353,7 @@ export default function ReturnDetailClient({ returnRequest: initial }: Props) {
               </p>
               {returnReq.razorpay_refund_id && (
                 <p>
-                  <span className="font-medium text-gray-900">Razorpay Refund ID:</span>{" "}
+                  <span className="font-medium text-foreground">Razorpay Refund ID:</span>{" "}
                   {returnReq.razorpay_refund_id}
                 </p>
               )}

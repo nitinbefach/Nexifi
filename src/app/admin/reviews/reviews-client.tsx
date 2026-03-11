@@ -102,8 +102,8 @@ export default function ReviewsClient({ initialReviews }: Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900">Review Moderation</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <h2 className="text-2xl font-bold text-foreground">Review Moderation</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
         {reviews.length} review{reviews.length !== 1 ? "s" : ""} — approve or reject customer reviews.
       </p>
 
@@ -112,19 +112,19 @@ export default function ReviewsClient({ initialReviews }: Props) {
       )}
 
       {/* Filter Tabs */}
-      <div className="mt-5 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <div className="mt-5 flex gap-1 rounded-lg bg-muted p-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.label}
-            <span className="ml-1.5 text-xs text-gray-400">({tab.count})</span>
+            <span className="ml-1.5 text-xs text-muted-foreground">({tab.count})</span>
           </button>
         ))}
       </div>
@@ -132,8 +132,8 @@ export default function ReviewsClient({ initialReviews }: Props) {
       {/* Reviews List */}
       <div className="mt-5 space-y-3">
         {filtered.length === 0 ? (
-          <div className="rounded-lg bg-white py-16 text-center shadow">
-            <p className="text-sm text-gray-400">
+          <div className="rounded-lg bg-card py-16 text-center shadow-sm">
+            <p className="text-sm text-muted-foreground">
               {activeTab === "all"
                 ? "No reviews yet."
                 : `No ${activeTab} reviews.`}
@@ -147,13 +147,13 @@ export default function ReviewsClient({ initialReviews }: Props) {
             return (
               <div
                 key={review.id}
-                className="rounded-lg bg-white p-4 shadow"
+                className="rounded-lg bg-card p-4 shadow-sm"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex-1">
                     {/* Product + Rating */}
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         {review.product?.name || "Unknown Product"}
                       </span>
                       <div className="flex gap-0.5">
@@ -163,7 +163,7 @@ export default function ReviewsClient({ initialReviews }: Props) {
                             className={`size-3.5 ${
                               star <= review.rating
                                 ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
+                                : "text-muted-foreground"
                             }`}
                           />
                         ))}
@@ -186,15 +186,15 @@ export default function ReviewsClient({ initialReviews }: Props) {
 
                     {/* Title + Comment */}
                     {review.title && (
-                      <p className="mt-1.5 text-sm font-medium text-gray-800">
+                      <p className="mt-1.5 text-sm font-medium text-foreground">
                         {review.title}
                       </p>
                     )}
                     {review.comment && (
-                      <p className="mt-1 text-sm text-gray-600">{review.comment}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{review.comment}</p>
                     )}
 
-                    <p className="mt-1.5 text-xs text-gray-400">
+                    <p className="mt-1.5 text-xs text-muted-foreground">
                       {new Date(review.created_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
@@ -206,7 +206,7 @@ export default function ReviewsClient({ initialReviews }: Props) {
                   {/* Actions */}
                   <div className="flex items-center gap-2">
                     {isLoading ? (
-                      <Loader2 className="size-4 animate-spin text-gray-400" />
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
                     ) : (
                       <>
                         {!review.is_approved && (
@@ -229,7 +229,7 @@ export default function ReviewsClient({ initialReviews }: Props) {
                         )}
                         <button
                           onClick={() => handleDelete(review.id)}
-                          className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                          className="rounded p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                           title="Delete"
                         >
                           <Trash2 className="size-4" />
