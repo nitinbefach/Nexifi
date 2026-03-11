@@ -68,12 +68,14 @@ export default function ProductsClient({
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="animate-fade-in mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">
+        <h1 className="text-xl font-bold sm:text-2xl md:text-3xl">
           {searchQuery ? `Results for "${searchQuery}"` : "All Products"}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <div className="mt-1.5 h-1 w-12 rounded-full bg-nexifi-orange md:w-16" />
+        <p className="mt-2 text-sm text-muted-foreground">
           {total} {total === 1 ? "product" : "products"} found
         </p>
       </div>
@@ -81,49 +83,49 @@ export default function ProductsClient({
       <div className="mt-6 flex gap-8">
         {/* Desktop Filters */}
         <aside className="hidden w-56 shrink-0 lg:block">
-          <div className="sticky top-24 rounded-xl border bg-muted/30 p-4">
-            <h2 className="font-semibold">Filters</h2>
-            <div className="mt-4 space-y-6">
-              <div>
-                <h3 className="text-sm font-semibold">Category</h3>
-                <ul className="mt-2.5 space-y-2">
-                  <li>
+          <div className="sticky top-24 space-y-6 rounded-2xl border bg-card p-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">Filters</h2>
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</h3>
+              <ul className="mt-3 space-y-1">
+                <li>
+                  <button
+                    onClick={() => handleCategoryClick(undefined)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                      !currentCategory
+                        ? "bg-nexifi-orange/10 font-semibold text-nexifi-orange"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    All Categories
+                  </button>
+                </li>
+                {categories.map((cat) => (
+                  <li key={cat.id}>
                     <button
-                      onClick={() => handleCategoryClick(undefined)}
-                      className={`text-sm transition-colors hover:text-foreground ${
-                        !currentCategory ? "font-semibold text-nexifi-orange" : "text-muted-foreground"
+                      onClick={() => handleCategoryClick(cat.slug)}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                        currentCategory === cat.slug
+                          ? "bg-nexifi-orange/10 font-semibold text-nexifi-orange"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
                     >
-                      All Categories
+                      {cat.name}
                     </button>
                   </li>
-                  {categories.map((cat) => (
-                    <li key={cat.id}>
-                      <button
-                        onClick={() => handleCategoryClick(cat.slug)}
-                        className={`text-sm transition-colors hover:text-foreground ${
-                          currentCategory === cat.slug
-                            ? "font-semibold text-nexifi-orange"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {cat.name}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                ))}
+              </ul>
             </div>
           </div>
         </aside>
 
         {/* Product Grid */}
         <div className="flex-1">
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="mb-5 flex items-center justify-between gap-3">
             <Button
               variant="outline"
               size="sm"
-              className="lg:hidden"
+              className="rounded-lg lg:hidden"
               onClick={() => useUIStore.getState().toggleFilter()}
             >
               <SlidersHorizontal className="size-4" />
@@ -137,7 +139,7 @@ export default function ProductsClient({
             <select
               value={currentSort}
               onChange={(e) => handleSortChange(e.target.value)}
-              className="h-9 cursor-pointer rounded-lg border bg-background px-3 text-sm transition-colors hover:border-nexifi-orange/40"
+              className="h-9 cursor-pointer rounded-lg border bg-background px-3 text-sm transition-colors hover:border-nexifi-orange/40 focus:outline-none focus:ring-2 focus:ring-nexifi-orange/30"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -151,11 +153,11 @@ export default function ProductsClient({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-2">
+            <div className="mt-10 flex items-center justify-center gap-1.5 sm:gap-2">
               {page > 1 && (
                 <Link
                   href={buildUrl({ page: String(page - 1) })}
-                  className="flex size-9 items-center justify-center rounded-lg border transition-colors hover:bg-muted"
+                  className="flex size-10 items-center justify-center rounded-xl border transition-colors hover:bg-muted"
                 >
                   <ChevronLeft className="size-4" />
                 </Link>
@@ -164,9 +166,9 @@ export default function ProductsClient({
                 <Link
                   key={p}
                   href={buildUrl({ page: String(p) })}
-                  className={`flex size-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex size-10 items-center justify-center rounded-xl text-sm font-medium transition-all ${
                     p === page
-                      ? "bg-nexifi-orange text-white"
+                      ? "bg-nexifi-orange text-white shadow-sm"
                       : "border hover:bg-muted"
                   }`}
                 >
@@ -176,7 +178,7 @@ export default function ProductsClient({
               {page < totalPages && (
                 <Link
                   href={buildUrl({ page: String(page + 1) })}
-                  className="flex size-9 items-center justify-center rounded-lg border transition-colors hover:bg-muted"
+                  className="flex size-10 items-center justify-center rounded-xl border transition-colors hover:bg-muted"
                 >
                   <ChevronRight className="size-4" />
                 </Link>
@@ -192,13 +194,17 @@ export default function ProductsClient({
           <SheetHeader className="border-b px-5 py-4">
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
-          <div className="p-5">
-            <h3 className="text-sm font-semibold">Category</h3>
-            <ul className="mt-2.5 space-y-2">
+          <div className="p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</h3>
+            <ul className="mt-3 space-y-1">
               <li>
                 <button
                   onClick={() => handleCategoryClick(undefined)}
-                  className={`text-sm ${!currentCategory ? "font-semibold text-nexifi-orange" : "text-muted-foreground"}`}
+                  className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                    !currentCategory
+                      ? "bg-nexifi-orange/10 font-semibold text-nexifi-orange"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
                 >
                   All Categories
                 </button>
@@ -207,10 +213,10 @@ export default function ProductsClient({
                 <li key={cat.id}>
                   <button
                     onClick={() => handleCategoryClick(cat.slug)}
-                    className={`text-sm ${
+                    className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                       currentCategory === cat.slug
-                        ? "font-semibold text-nexifi-orange"
-                        : "text-muted-foreground"
+                        ? "bg-nexifi-orange/10 font-semibold text-nexifi-orange"
+                        : "text-muted-foreground hover:bg-muted"
                     }`}
                   >
                     {cat.name}
@@ -232,8 +238,10 @@ export default function ProductsClient({
             {sortOptions.map((opt) => (
               <button
                 key={opt.value}
-                className={`flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${
-                  currentSort === opt.value ? "text-nexifi-orange" : "text-foreground"
+                className={`flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  currentSort === opt.value
+                    ? "bg-nexifi-orange/10 text-nexifi-orange"
+                    : "text-foreground hover:bg-muted"
                 }`}
                 onClick={() => {
                   handleSortChange(opt.value);

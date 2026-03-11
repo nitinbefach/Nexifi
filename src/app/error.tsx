@@ -25,7 +25,7 @@ export default function Error({
         </button>
         <Link
           href="/"
-          className="inline-flex items-center justify-center rounded-lg bg-[#F26B1D] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#F26B1D]/90"
+          className="inline-flex items-center justify-center rounded-lg bg-[#7C3AED] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#7C3AED]/90"
         >
           Back to Home
         </Link>

@@ -46,10 +46,10 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* NEXIFI Brand Colors */
-  --color-nexifi-orange: #F26B1D;
-  --color-nexifi-orange-light: #FF8A3D;
-  --color-nexifi-orange-dark: #D45A10;
+  /* NEXIFI Brand Colors — Purple accent (matches logo) */
+  --color-nexifi-orange: #7C3AED;
+  --color-nexifi-orange-light: #9B5FFF;
+  --color-nexifi-orange-dark: #6025C0;
   --color-nexifi-purple: #7C3AED;
   --color-nexifi-purple-light: #9B5FFF;
   --color-nexifi-purple-dark: #6025C0;
@@ -138,11 +138,11 @@
 
 /* NEXIFI Gradient Utility */
 .nexifi-gradient {
-  background: linear-gradient(135deg, #F26B1D 0%, #D45A10 40%, #7C3AED 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #6025C0 50%, #4C1D95 100%);
 }
 
 .nexifi-gradient-soft {
-  background: linear-gradient(135deg, #F26B1D 0%, #FF8A3D 50%, #9B5FFF 100%);
+  background: linear-gradient(135deg, #9B5FFF 0%, #7C3AED 50%, #6025C0 100%);
 }
 
 /* Safe area utilities for notched devices */
@@ -160,4 +160,42 @@
   .tap-highlight {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Image hover zoom effect for product cards */
+.img-hover-zoom {
+  overflow: hidden;
+}
+.img-hover-zoom img {
+  transition: transform 0.4s ease;
+}
+.img-hover-zoom:hover img {
+  transform: scale(1.08);
+}
+
+/* Card hover lift effect */
+.card-hover {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Smooth fade-in for page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Hide scrollbar but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

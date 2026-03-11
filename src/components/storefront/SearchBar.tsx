@@ -24,14 +24,14 @@ export default function SearchBar({ autoFocus, onSubmit }: SearchBarProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-sm">
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <form onSubmit={handleSubmit} className="relative w-full">
+      <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search products..."
-        className="h-8 w-full rounded-full sm:h-9 border bg-muted/50 pl-9 pr-8 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-nexifi-orange focus:bg-background focus:ring-1 focus:ring-nexifi-orange/30"
+        placeholder="I am shopping for..."
+        className="h-9 w-full rounded-lg border border-gray-200 bg-gray-50 pl-10 pr-9 text-sm outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-nexifi-orange focus:bg-white focus:ring-2 focus:ring-nexifi-orange/20 sm:h-10"
         autoFocus={autoFocus}
       />
       {query && (

@@ -31,16 +31,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:border-nexifi-orange/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexifi-orange"
+      className="card-hover group relative flex flex-col overflow-hidden rounded-2xl border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexifi-orange"
     >
       {/* Image Area */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-muted/50">
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-400 group-hover:scale-108"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
@@ -49,18 +49,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        {/* Discount Badge */}
-        {discount > 0 && (
-          <span className="absolute left-2 top-2 rounded-md bg-nexifi-orange px-1.5 py-0.5 text-[11px] font-bold text-white md:px-2 md:py-1 md:text-xs">
-            {discount}% OFF
-          </span>
-        )}
-
       </div>
 
       {/* Info Area */}
-      <div className="flex flex-1 flex-col gap-1 p-2.5 md:gap-1.5 md:p-4">
-        <h3 className="line-clamp-2 text-xs font-medium leading-snug text-foreground sm:text-sm md:text-base">
+      <div className="flex flex-1 flex-col gap-1 p-3 md:gap-1.5 md:p-4">
+        <h3 className="line-clamp-2 text-xs font-medium leading-snug text-foreground sm:text-sm md:text-[15px]">
           {product.name}
         </h3>
 
@@ -68,13 +61,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <StarRating rating={product.avgRating} count={product.reviewCount} size="sm" />
         )}
 
-        <div className="mt-auto flex items-baseline gap-1 pt-0.5 md:gap-2 md:pt-1.5">
+        <div className="mt-auto flex items-baseline gap-1.5 pt-1 md:gap-2 md:pt-2">
           <span className="text-sm font-bold text-foreground md:text-lg">
-            Rs. {product.sellingPrice.toLocaleString("en-IN")}
+            ₹{product.sellingPrice.toLocaleString("en-IN")}
           </span>
           {discount > 0 && (
-            <span className="text-[11px] text-muted-foreground line-through md:text-sm">
-              Rs. {product.originalPrice.toLocaleString("en-IN")}
+            <span className="text-[10px] text-muted-foreground line-through md:text-sm">
+              ₹{product.originalPrice.toLocaleString("en-IN")}
             </span>
           )}
         </div>
