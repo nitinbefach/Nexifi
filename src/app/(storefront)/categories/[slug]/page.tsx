@@ -41,29 +41,30 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const currentSort = sort || "newest";
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="animate-fade-in mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground sm:mb-6">
-        <Link href="/" className="hover:text-foreground">Home</Link>
-        <ChevronRight className="size-3.5" />
-        <Link href="/products" className="hover:text-foreground">Products</Link>
-        <ChevronRight className="size-3.5" />
+      <nav className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-6 sm:text-sm">
+        <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
+        <ChevronRight className="size-3" />
+        <Link href="/products" className="transition-colors hover:text-foreground">Products</Link>
+        <ChevronRight className="size-3" />
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl">{category.name}</h1>
+      <h1 className="text-xl font-bold sm:text-2xl md:text-3xl">{category.name}</h1>
+      <div className="mt-1.5 h-1 w-12 rounded-full bg-nexifi-orange md:w-16" />
       {category.description && (
-        <p className="mt-2 text-sm text-muted-foreground">{category.description}</p>
+        <p className="mt-3 text-sm text-muted-foreground">{category.description}</p>
       )}
 
-      <div className="mt-4 flex items-center justify-between sm:mt-6">
+      <div className="mt-5 flex items-center justify-between sm:mt-6">
         <span className="text-sm text-muted-foreground">
           {result.total} {result.total === 1 ? "product" : "products"}
         </span>
         <SortSelect currentSort={currentSort} baseUrl={`/categories/${slug}`} />
       </div>
 
-      <div className="mt-4 sm:mt-6">
+      <div className="mt-5 sm:mt-6">
         <ProductGrid products={products} />
       </div>
     </div>

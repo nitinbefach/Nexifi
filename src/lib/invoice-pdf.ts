@@ -53,7 +53,7 @@ export function generateInvoicePDF(
   // ---- Header ----
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(242, 107, 29); // nexifi-orange
+  doc.setTextColor(124, 58, 237); // nexifi-purple (brand accent)
   doc.text("NEXIFI", margin, y + 8);
 
   doc.setFontSize(10);
@@ -70,7 +70,7 @@ export function generateInvoicePDF(
   y += 22;
 
   // Divider
-  doc.setDrawColor(242, 107, 29);
+  doc.setDrawColor(124, 58, 237);
   doc.setLineWidth(0.8);
   doc.line(margin, y, pageWidth - margin, y);
   y += 8;
@@ -134,7 +134,7 @@ export function generateInvoicePDF(
     body: tableBody,
     theme: "striped",
     headStyles: {
-      fillColor: [242, 107, 29],
+      fillColor: [124, 58, 237],
       textColor: [255, 255, 255],
       fontStyle: "bold",
       fontSize: 9,
@@ -202,7 +202,7 @@ export function generateInvoicePDF(
   doc.setFont("helvetica", "bold");
   doc.setTextColor(30, 30, 30);
   doc.text("Grand Total", summaryX, y + 3);
-  doc.setTextColor(242, 107, 29);
+  doc.setTextColor(124, 58, 237);
   doc.text(formatINR(order.total_amount), valueX, y + 3, { align: "right" });
 
   // ---- Footer ----

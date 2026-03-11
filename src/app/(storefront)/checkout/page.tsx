@@ -152,7 +152,7 @@ export default function CheckoutPage() {
   ];
 
   const inputClass = (field: string) =>
-    `mt-1 h-10 w-full rounded-lg border px-3 text-sm outline-none transition-colors focus:border-nexifi-orange focus:ring-1 focus:ring-nexifi-orange/30 ${
+    `mt-1.5 h-11 w-full rounded-xl border bg-background px-3.5 text-sm outline-none transition-colors focus:border-nexifi-orange focus:ring-2 focus:ring-nexifi-orange/20 ${
       errors[field] ? "border-red-400" : ""
     }`;
 
@@ -173,13 +173,16 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="animate-fade-in mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Link href="/cart" className="text-muted-foreground hover:text-foreground">
+        <Link href="/cart" className="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
           <ChevronLeft className="size-5" />
         </Link>
-        <h1 className="text-2xl font-bold sm:text-3xl">Checkout</h1>
+        <div>
+          <h1 className="text-xl font-bold sm:text-2xl md:text-3xl">Checkout</h1>
+          <div className="mt-1 h-1 w-10 rounded-full bg-nexifi-orange md:w-12" />
+        </div>
       </div>
 
       {/* Step Indicator */}
@@ -221,7 +224,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* Step Content */}
-      <div className="mt-6 rounded-xl border p-5 sm:mt-8 sm:p-6">
+      <div className="mt-6 rounded-2xl border bg-card p-5 sm:mt-8 sm:p-6">
         {/* STEP 1: Address */}
         {currentStep === "address" && (
           <div>
@@ -324,7 +327,7 @@ export default function CheckoutPage() {
             <h2 className="text-lg font-semibold">Review Your Order</h2>
             <div className="mt-4 space-y-3">
               {/* Address summary */}
-              <div className="rounded-lg bg-muted/50 p-4">
+              <div className="rounded-xl bg-muted/40 p-4">
                 <h3 className="text-sm font-semibold">Shipping Address</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {form.firstName} {form.lastName}<br />
@@ -335,7 +338,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment summary */}
-              <div className="rounded-lg bg-muted/50 p-4">
+              <div className="rounded-xl bg-muted/40 p-4">
                 <h3 className="text-sm font-semibold">Payment</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {paymentMethod === "cod" ? "Cash on Delivery" : "PhonePe / UPI"}
@@ -343,7 +346,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Order summary */}
-              <div className="rounded-lg bg-muted/50 p-4">
+              <div className="rounded-xl bg-muted/40 p-4">
                 <h3 className="text-sm font-semibold">Order Summary</h3>
                 <div className="mt-2 space-y-1 text-sm">
                   <div className="flex justify-between">

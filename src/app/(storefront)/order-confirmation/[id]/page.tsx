@@ -28,22 +28,22 @@ export default async function OrderConfirmationPage({
   const order = await getOrder(id);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:py-16">
+    <div className="animate-fade-in mx-auto max-w-2xl px-4 py-10 sm:py-16">
       {/* Success Icon */}
       <div className="text-center">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-          <CheckCircle className="size-10 text-green-600" />
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 sm:size-24">
+          <CheckCircle className="size-10 text-green-600 sm:size-12" />
         </div>
         <h1 className="mt-5 text-2xl font-bold sm:text-3xl">Order Placed!</h1>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           Thank you for your purchase. Your order has been confirmed.
         </p>
       </div>
 
       {/* Order Number */}
-      <div className="mt-8 rounded-xl border p-5 text-center">
-        <p className="text-sm text-muted-foreground">Order Number</p>
-        <p className="mt-1 text-xl font-bold tracking-wide text-nexifi-orange sm:text-2xl">
+      <div className="mt-8 rounded-2xl border bg-card p-5 text-center sm:p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Order Number</p>
+        <p className="mt-1.5 text-xl font-bold tracking-wide text-nexifi-orange sm:text-2xl">
           {order?.order_number || id}
         </p>
       </div>
@@ -52,7 +52,7 @@ export default async function OrderConfirmationPage({
       {order && (
         <>
           {/* Items */}
-          <div className="mt-6 rounded-xl border p-5">
+          <div className="mt-5 rounded-2xl border bg-card p-5">
             <h2 className="text-sm font-semibold">Items Ordered</h2>
             <ul className="mt-3 divide-y">
               {order.items?.map((item: { id: string; product_name: string; quantity: number; unit_price: number; total_price: number }) => (
@@ -70,7 +70,7 @@ export default async function OrderConfirmationPage({
           </div>
 
           {/* Summary */}
-          <div className="mt-4 rounded-xl border p-5">
+          <div className="mt-4 rounded-2xl border bg-card p-5">
             <h2 className="text-sm font-semibold">Order Summary</h2>
             <div className="mt-3 space-y-1.5 text-sm">
               <div className="flex justify-between">
@@ -109,7 +109,7 @@ export default async function OrderConfirmationPage({
           </div>
 
           {/* Shipping Address */}
-          <div className="mt-4 rounded-xl border p-5">
+          <div className="mt-4 rounded-2xl border bg-card p-5">
             <h2 className="text-sm font-semibold">Shipping To</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               {order.shipping_address.full_name}<br />
@@ -129,7 +129,7 @@ export default async function OrderConfirmationPage({
       )}
 
       {/* What's Next */}
-      <div className="mt-6 rounded-xl bg-muted/30 p-5">
+      <div className="mt-6 rounded-2xl bg-muted/30 p-5">
         <h2 className="font-semibold">What&apos;s Next?</h2>
         <ul className="mt-3 space-y-2.5">
           <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
@@ -152,14 +152,14 @@ export default async function OrderConfirmationPage({
         {order && (
           <Link
             href={`/track-order?order=${encodeURIComponent(order.order_number)}`}
-            className="rounded-lg border border-nexifi-orange px-8 py-2.5 text-sm font-semibold text-nexifi-orange transition-colors hover:bg-nexifi-orange/5"
+            className="rounded-xl border border-nexifi-orange px-8 py-2.5 text-sm font-semibold text-nexifi-orange transition-colors hover:bg-nexifi-orange/5"
           >
             Track Your Order
           </Link>
         )}
         <Link
           href="/products"
-          className="rounded-lg bg-nexifi-orange px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-nexifi-orange-dark"
+          className="rounded-xl bg-nexifi-orange px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-nexifi-orange-dark"
         >
           Continue Shopping
         </Link>

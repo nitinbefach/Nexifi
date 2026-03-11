@@ -16,8 +16,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const currentSort = sort || "newest";
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Search Results</h1>
+    <div className="animate-fade-in mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <h1 className="text-xl font-bold sm:text-2xl md:text-3xl">Search Results</h1>
+      <div className="mt-1.5 h-1 w-12 rounded-full bg-nexifi-orange md:w-16" />
       {q ? (
         <p className="mt-1 text-sm text-muted-foreground">
           {products.length} {products.length === 1 ? "result" : "results"} for &ldquo;{q}&rdquo;

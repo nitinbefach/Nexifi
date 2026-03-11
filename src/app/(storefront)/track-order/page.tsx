@@ -107,13 +107,13 @@ function TrackOrderContent() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:py-16">
+    <div className="animate-fade-in mx-auto max-w-2xl px-4 py-10 sm:py-16">
       <div className="text-center">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-nexifi-orange/10">
-          <Package className="size-8 text-nexifi-orange" />
+        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-nexifi-orange/10 sm:size-20">
+          <Package className="size-8 text-nexifi-orange sm:size-10" />
         </div>
-        <h1 className="mt-4 text-2xl font-bold sm:text-3xl">Track Your Order</h1>
-        <p className="mt-2 text-muted-foreground">
+        <h1 className="mt-4 text-xl font-bold sm:text-2xl md:text-3xl">Track Your Order</h1>
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           Enter your order number to check the current status.
         </p>
       </div>
@@ -126,12 +126,12 @@ function TrackOrderContent() {
             value={orderNumber}
             onChange={(e) => setOrderNumber(e.target.value)}
             placeholder="e.g. ORD-20260310-00001"
-            className="flex-1 rounded-lg border px-4 py-3 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+            className="flex-1 rounded-xl border bg-background px-4 py-3 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-2 focus:ring-nexifi-orange/20"
           />
           <button
             type="submit"
             disabled={loading || !orderNumber.trim()}
-            className="flex items-center gap-2 rounded-lg bg-nexifi-orange px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-nexifi-orange-dark disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-nexifi-orange px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-nexifi-orange-dark disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
@@ -161,7 +161,7 @@ function TrackOrderContent() {
       {order && (
         <div className="mt-8 space-y-5">
           {/* Order Number & Status */}
-          <div className="rounded-xl border p-5">
+          <div className="rounded-2xl border bg-card p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground">Order Number</p>
@@ -177,7 +177,7 @@ function TrackOrderContent() {
           </div>
 
           {/* Timeline */}
-          <div className="rounded-xl border p-5">
+          <div className="rounded-2xl border bg-card p-5">
             <h2 className="mb-4 text-sm font-semibold">Order Status</h2>
             <OrderTimeline
               currentStatus={order.status}
@@ -187,7 +187,7 @@ function TrackOrderContent() {
           </div>
 
           {/* Items */}
-          <div className="rounded-xl border p-5">
+          <div className="rounded-2xl border bg-card p-5">
             <h2 className="text-sm font-semibold">Items</h2>
             <ul className="mt-3 divide-y">
               {order.items?.map((item) => (
@@ -207,7 +207,7 @@ function TrackOrderContent() {
           </div>
 
           {/* Summary */}
-          <div className="rounded-xl border p-5">
+          <div className="rounded-2xl border bg-card p-5">
             <h2 className="text-sm font-semibold">Order Summary</h2>
             <div className="mt-3 space-y-1.5 text-sm">
               <div className="flex justify-between">
@@ -247,7 +247,7 @@ function TrackOrderContent() {
 
           {/* Shipping Address */}
           {order.shipping_address && (
-            <div className="rounded-xl border p-5">
+            <div className="rounded-2xl border bg-card p-5">
               <h2 className="text-sm font-semibold">Shipping To</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {order.shipping_address.full_name}<br />
