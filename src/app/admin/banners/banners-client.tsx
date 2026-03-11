@@ -1,7 +1,23 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Plus, Pencil, Trash2, X, Loader2, Image as ImageIcon, Upload } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { Plus, Pencil, Trash2, X, Loader2, Image as ImageIcon, Upload, Info, CheckCircle2, AlertTriangle } from "lucide-react";
+
+const RECOMMENDED = {
+  desktop: { w: 1920, h: 500 },
+  mobile: { w: 768, h: 280 },
+} as const;
+
+function getDimStatus(actual: { w: number; h: number }, type: "desktop" | "mobile") {
+  const rec = RECOMMENDED[type];
+  const aspectActual = actual.w / actual.h;
+  const aspectRec = rec.w / rec.h;
+  const aspectDiff = Math.abs(aspectActual - aspectRec) / aspectRec;
+
+  if (actual.w === rec.w && actual.h === rec.h) return "perfect";
+  if (aspectDiff < 0.15 && actual.w >= rec.w * 0.8) return "good";
+  return "warning";
+}
 
 interface Banner {
   id: string;
@@ -35,6 +51,22 @@ export default function BannersClient({ initialBanners }: Props) {
   const [formSortOrder, setFormSortOrder] = useState(0);
   const [formIsActive, setFormIsActive] = useState(true);
 
+  // Dimension detection state
+  const [desktopDims, setDesktopDims] = useState<{ w: number; h: number } | null>(null);
+  const [mobileDims, setMobileDims] = useState<{ w: number; h: number } | null>(null);
+
+  const detectDimensions = useCallback((url: string, target: "desktop" | "mobile") => {
+    const setDims = target === "desktop" ? setDesktopDims : setMobileDims;
+    if (!url.trim()) {
+      setDims(null);
+      return;
+    }
+    const img = new window.Image();
+    img.onload = () => setDims({ w: img.naturalWidth, h: img.naturalHeight });
+    img.onerror = () => setDims(null);
+    img.src = url;
+  }, []);
+
   const resetForm = () => {
     setFormTitle("");
     setFormImageUrl("");
@@ -45,6 +77,8 @@ export default function BannersClient({ initialBanners }: Props) {
     setEditingId(null);
     setShowAdd(false);
     setError("");
+    setDesktopDims(null);
+    setMobileDims(null);
   };
 
   const startEdit = (b: Banner) => {
@@ -57,6 +91,9 @@ export default function BannersClient({ initialBanners }: Props) {
     setFormSortOrder(b.sort_order);
     setFormIsActive(b.is_active);
     setError("");
+    detectDimensions(b.image_url, "desktop");
+    if (b.mobile_image_url) detectDimensions(b.mobile_image_url, "mobile");
+    else setMobileDims(null);
   };
 
   const startAdd = () => {
@@ -93,8 +130,10 @@ export default function BannersClient({ initialBanners }: Props) {
 
       if (target === "desktop") {
         setFormImageUrl(url);
+        detectDimensions(url, "desktop");
       } else {
         setFormMobileImageUrl(url);
+        detectDimensions(url, "mobile");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -171,6 +210,31 @@ export default function BannersClient({ initialBanners }: Props) {
 
   const showForm = showAdd || editingId;
 
+  const renderDimStatus = (dims: { w: number; h: number } | null, type: "desktop" | "mobile") => {
+    if (!dims) return null;
+    const status = getDimStatus(dims, type);
+    const rec = RECOMMENDED[type];
+    return (
+      <div className={`mt-1.5 flex items-center gap-1 text-xs ${
+        status === "perfect" ? "text-green-600" :
+        status === "good" ? "text-green-600" :
+        "text-amber-600"
+      }`}>
+        {status === "warning" ? (
+          <AlertTriangle className="size-3.5" />
+        ) : (
+          <CheckCircle2 className="size-3.5" />
+        )}
+        <span>
+          {dims.w} x {dims.h}px
+          {status === "perfect" && " — Perfect match!"}
+          {status === "good" && " — Good aspect ratio"}
+          {status === "warning" && ` — Recommended: ${rec.w} x ${rec.h}px`}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -207,6 +271,29 @@ export default function BannersClient({ initialBanners }: Props) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            {/* Dimension Guide */}
+            <div className="sm:col-span-2 rounded-lg border border-orange-200 bg-orange-50 p-3">
+              <div className="flex items-start gap-2">
+                <Info className="mt-0.5 size-4 shrink-0 text-orange-500" />
+                <div className="text-sm text-orange-800">
+                  <p className="font-medium">Recommended Image Sizes</p>
+                  <div className="mt-1.5 grid gap-1 text-xs sm:grid-cols-2">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-orange-100 px-1.5 py-0.5 font-medium">Desktop</span>
+                      <span>{RECOMMENDED.desktop.w} x {RECOMMENDED.desktop.h} px (wide landscape)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-orange-100 px-1.5 py-0.5 font-medium">Mobile</span>
+                      <span>{RECOMMENDED.mobile.w} x {RECOMMENDED.mobile.h} px (landscape)</span>
+                    </div>
+                  </div>
+                  <p className="mt-1.5 text-xs text-orange-600">
+                    Accepted formats: JPG, PNG, WebP (max 5 MB)
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Desktop Image */}
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
@@ -216,6 +303,7 @@ export default function BannersClient({ initialBanners }: Props) {
                 <input
                   value={formImageUrl}
                   onChange={(e) => setFormImageUrl(e.target.value)}
+                  onBlur={() => detectDimensions(formImageUrl, "desktop")}
                   placeholder="https://example.com/banner.jpg"
                   className="flex-1 rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
                 />
@@ -251,6 +339,7 @@ export default function BannersClient({ initialBanners }: Props) {
                 <input
                   value={formMobileImageUrl}
                   onChange={(e) => setFormMobileImageUrl(e.target.value)}
+                  onBlur={() => detectDimensions(formMobileImageUrl, "mobile")}
                   placeholder="https://example.com/banner-mobile.jpg"
                   className="flex-1 rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
                 />
@@ -277,19 +366,64 @@ export default function BannersClient({ initialBanners }: Props) {
               />
             </div>
 
-            {/* Preview */}
-            {formImageUrl && (
+            {/* Enhanced Preview */}
+            {(formImageUrl || formMobileImageUrl) && (
               <div className="sm:col-span-2">
-                <p className="mb-1 text-xs font-medium text-gray-500">Preview</p>
-                <div className="h-40 overflow-hidden rounded-lg border bg-gray-100">
-                  <img
-                    src={formImageUrl}
-                    alt="Banner preview"
-                    className="size-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
+                <p className="mb-2 text-xs font-medium text-gray-500">Preview</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {/* Desktop Preview */}
+                  {formImageUrl && (
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-gray-600">Desktop</p>
+                      <div className="relative overflow-hidden rounded-lg border bg-gray-100" style={{ aspectRatio: `${RECOMMENDED.desktop.w} / ${RECOMMENDED.desktop.h}` }}>
+                        <img
+                          src={formImageUrl}
+                          alt="Desktop preview"
+                          className="size-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        {desktopDims && (
+                          <span className="absolute bottom-1.5 right-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                            {desktopDims.w} x {desktopDims.h}
+                          </span>
+                        )}
+                      </div>
+                      {renderDimStatus(desktopDims, "desktop")}
+                    </div>
+                  )}
+
+                  {/* Mobile Preview */}
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-gray-600">Mobile</p>
+                    {formMobileImageUrl ? (
+                      <>
+                        <div className="relative overflow-hidden rounded-lg border bg-gray-100" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
+                          <img
+                            src={formMobileImageUrl}
+                            alt="Mobile preview"
+                            className="size-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                          />
+                          {mobileDims && (
+                            <span className="absolute bottom-1.5 right-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                              {mobileDims.w} x {mobileDims.h}
+                            </span>
+                          )}
+                        </div>
+                        {renderDimStatus(mobileDims, "mobile")}
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-6 text-center" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
+                        <p className="text-xs text-gray-400">
+                          No mobile image — desktop image will be used on all screen sizes
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -388,9 +522,14 @@ export default function BannersClient({ initialBanners }: Props) {
               </div>
               <div className="flex items-center justify-between p-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {b.title || "Untitled Banner"}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">
+                      {b.title || "Untitled Banner"}
+                    </p>
+                    <span className="rounded bg-orange-50 px-1.5 py-0.5 text-[10px] font-medium text-orange-600">
+                      Hero Banner
+                    </span>
+                  </div>
                   <p className="mt-0.5 text-xs text-gray-500">
                     Position: {b.sort_order}
                     {b.link_url && ` · Links to ${b.link_url}`}
