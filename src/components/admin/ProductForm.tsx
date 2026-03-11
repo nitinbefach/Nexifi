@@ -147,7 +147,7 @@ export default function ProductForm({ product, categories }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 max-w-3xl space-y-5 rounded-lg bg-white p-6 shadow">
+    <form onSubmit={handleSubmit} className="mt-6 max-w-3xl space-y-5 rounded-lg border bg-card p-6 shadow-sm">
       {error && (
         <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
@@ -156,7 +156,7 @@ export default function ProductForm({ product, categories }: Props) {
 
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Product Name *</label>
+        <label className="block text-sm font-medium text-foreground">Product Name *</label>
         <input
           type="text"
           name="name"
@@ -168,7 +168,7 @@ export default function ProductForm({ product, categories }: Props) {
 
       {/* Short Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Short Description</label>
+        <label className="block text-sm font-medium text-foreground">Short Description</label>
         <input
           type="text"
           name="short_description"
@@ -181,7 +181,7 @@ export default function ProductForm({ product, categories }: Props) {
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <label className="block text-sm font-medium text-foreground">Description</label>
         <textarea
           name="description"
           value={form.description}
@@ -193,13 +193,13 @@ export default function ProductForm({ product, categories }: Props) {
 
       {/* Product Images */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Product Images</label>
         <ImageUploader images={images} onImagesChange={setImages} />
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Category</label>
+        <label className="block text-sm font-medium text-foreground">Category</label>
         <select
           name="category_id"
           value={form.category_id}
@@ -218,7 +218,7 @@ export default function ProductForm({ product, categories }: Props) {
       {/* Pricing */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Original Price (MRP)</label>
+          <label className="block text-sm font-medium text-foreground">Original Price (MRP)</label>
           <input
             type="number"
             name="original_price"
@@ -230,7 +230,7 @@ export default function ProductForm({ product, categories }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Selling Price *</label>
+          <label className="block text-sm font-medium text-foreground">Selling Price *</label>
           <input
             type="number"
             name="selling_price"
@@ -246,7 +246,7 @@ export default function ProductForm({ product, categories }: Props) {
       {/* SKU & Stock */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700">SKU</label>
+          <label className="block text-sm font-medium text-foreground">SKU</label>
           <input
             type="text"
             name="sku"
@@ -256,7 +256,7 @@ export default function ProductForm({ product, categories }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Stock Quantity</label>
+          <label className="block text-sm font-medium text-foreground">Stock Quantity</label>
           <input
             type="number"
             name="stock_quantity"
@@ -315,7 +315,7 @@ export default function ProductForm({ product, categories }: Props) {
         <button
           type="button"
           onClick={() => router.push("/admin/products")}
-          className="rounded-md border px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded-md border px-6 py-2 text-sm font-medium text-foreground hover:bg-muted"
         >
           Cancel
         </button>

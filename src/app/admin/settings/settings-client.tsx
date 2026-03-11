@@ -70,8 +70,8 @@ export default function SettingsClient({ initialSettings }: Props) {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Store Settings</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Store Settings</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Configure your NEXIFI store. Changes take effect immediately.
           </p>
         </div>
@@ -99,8 +99,8 @@ export default function SettingsClient({ initialSettings }: Props) {
 
       <div className="mt-6 max-w-3xl space-y-6">
         {/* General Settings */}
-        <section className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-semibold text-gray-900">General</h3>
+        <section className="rounded-lg bg-card p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-foreground">General</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field
               label="Store Name"
@@ -127,8 +127,8 @@ export default function SettingsClient({ initialSettings }: Props) {
         </section>
 
         {/* Pricing & Tax */}
-        <section className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Pricing & Tax</h3>
+        <section className="rounded-lg bg-card p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-foreground">Pricing & Tax</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <Field
               label="COD Charge (₹)"
@@ -152,8 +152,8 @@ export default function SettingsClient({ initialSettings }: Props) {
         </section>
 
         {/* Operational */}
-        <section className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Operational</h3>
+        <section className="rounded-lg bg-card p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-foreground">Operational</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field
               label="Return Window (days)"
@@ -171,8 +171,8 @@ export default function SettingsClient({ initialSettings }: Props) {
         </section>
 
         {/* Social Links */}
-        <section className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-semibold text-gray-900">Social Links</h3>
+        <section className="rounded-lg bg-card p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-foreground">Social Links</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <Field
               label="Instagram"
@@ -220,13 +220,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block text-sm font-medium text-foreground">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+        className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
       />
     </div>
   );

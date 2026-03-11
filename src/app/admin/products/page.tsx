@@ -1,6 +1,23 @@
 import Link from "next/link";
 import { getAdminProducts } from "@/lib/supabase/admin-queries";
 import { formatINR } from "@/lib/utils";
+import { Plus, Upload } from "lucide-react";
+import LinkButton from "@/components/admin/LinkButton";
+import AnimatedPage from "@/components/admin/AnimatedPage";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface SearchParams {
   page?: string;
@@ -21,173 +38,176 @@ export default async function AdminProductsPage({
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div>
+    <AnimatedPage className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold tracking-tight">Products</h1>
+          <p className="text-sm text-muted-foreground">
             {total} product{total !== 1 ? "s" : ""} in your catalog.
           </p>
         </div>
-        <div className="flex gap-3">
-          <Link
-            href="/admin/products/bulk-upload"
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+        <div className="flex gap-2">
+          <LinkButton href="/admin/products/bulk-upload" className="gap-1.5">
+            <Upload className="size-3.5" />
             Bulk Upload
-          </Link>
-          <Link
-            href="/admin/products/new"
-            className="rounded-md bg-nexifi-orange px-4 py-2 text-sm font-medium text-white hover:bg-nexifi-orange-dark"
-          >
+          </LinkButton>
+          <LinkButton href="/admin/products/new" variant="default" className="gap-1.5">
+            <Plus className="size-3.5" />
             Add Product
-          </Link>
+          </LinkButton>
         </div>
       </div>
 
       {/* Search */}
-      <form className="mt-4" method="GET">
-        <input
+      <form method="GET">
+        <Input
           type="text"
           name="search"
           defaultValue={search}
           placeholder="Search products..."
-          className="w-full max-w-sm rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
+          className="max-w-sm"
         />
       </form>
 
       {/* Product Table */}
-      <div className="mt-4 overflow-hidden rounded-lg bg-white shadow">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
-                <th className="px-6 py-3">Product</th>
-                <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3">Price</th>
-                <th className="px-6 py-3">Stock</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {products.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-gray-400">
+                <TableRow>
+                  <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
                     {search ? "No products match your search." : "No products yet."}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 products.map((product) => {
                   const primaryImage = product.images?.find(
                     (img: { is_primary: boolean }) => img.is_primary
                   );
+                  const stockLevel =
+                    product.stock_quantity < 5
+                      ? "low"
+                      : product.stock_quantity < 15
+                        ? "medium"
+                        : "good";
+
                   return (
-                    <tr key={product.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3">
+                    <TableRow key={product.id} className="admin-table-row">
+                      <TableCell>
                         <div className="flex items-center gap-3">
                           {primaryImage ? (
-                            <img
-                              src={primaryImage.image_url}
-                              alt={product.name}
-                              className="size-10 rounded object-cover"
-                            />
+                            <div className="img-hover-zoom rounded-md">
+                              <img
+                                src={primaryImage.image_url}
+                                alt={product.name}
+                                className="size-10 rounded-md object-cover"
+                              />
+                            </div>
                           ) : (
-                            <div className="flex size-10 items-center justify-center rounded bg-gray-100 text-xs text-gray-400">
+                            <div className="flex size-10 items-center justify-center rounded-md bg-muted text-xs text-muted-foreground">
                               IMG
                             </div>
                           )}
                           <div>
                             <Link
                               href={`/admin/products/${product.id}/edit`}
-                              className="font-medium text-gray-900 hover:text-nexifi-orange hover:underline"
+                              className="font-medium hover:text-nexifi-orange hover:underline"
                             >
                               {product.name}
                             </Link>
-                            <p className="text-xs text-gray-500">{product.sku || "—"}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {product.sku || "—"}
+                            </p>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-3 text-gray-600">
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
                         {product.category?.name || "—"}
-                      </td>
-                      <td className="px-6 py-3">
-                        <div>
-                          <span className="font-medium">
-                            {formatINR(product.selling_price)}
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-medium">
+                          {formatINR(product.selling_price)}
+                        </span>
+                        {product.original_price > product.selling_price && (
+                          <span className="ml-1.5 text-xs text-muted-foreground line-through">
+                            {formatINR(product.original_price)}
                           </span>
-                          {product.original_price > product.selling_price && (
-                            <span className="ml-1.5 text-xs text-gray-400 line-through">
-                              {formatINR(product.original_price)}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <span
                           className={
-                            product.stock_quantity < 5
-                              ? "font-medium text-red-600"
-                              : "text-gray-600"
+                            stockLevel === "low"
+                              ? "font-semibold text-destructive"
+                              : stockLevel === "medium"
+                                ? "font-medium text-amber-500"
+                                : "text-muted-foreground"
                           }
                         >
                           {product.stock_quantity}
                         </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                            product.is_active
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={product.is_active ? "default" : "secondary"}
                         >
                           {product.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3">
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         <Link
                           href={`/admin/products/${product.id}/edit`}
                           className="text-sm font-medium text-nexifi-orange hover:underline"
                         >
                           Edit
                         </Link>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })
               )}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t px-6 py-3">
-            <p className="text-xs text-gray-500">
-              Page {page} of {totalPages}
-            </p>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/admin/products?page=${page - 1}${search ? `&search=${search}` : ""}`}
-                  className="rounded border px-3 py-1 text-xs hover:bg-gray-50"
-                >
-                  Previous
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={`/admin/products?page=${page + 1}${search ? `&search=${search}` : ""}`}
-                  className="rounded border px-3 py-1 text-xs hover:bg-gray-50"
-                >
-                  Next
-                </Link>
-              )}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t px-4 py-3">
+              <p className="text-xs text-muted-foreground">
+                Page {page} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                {page > 1 && (
+                  <LinkButton
+                    href={`/admin/products?page=${page - 1}${search ? `&search=${search}` : ""}`}
+                    size="xs"
+                  >
+                    Previous
+                  </LinkButton>
+                )}
+                {page < totalPages && (
+                  <LinkButton
+                    href={`/admin/products?page=${page + 1}${search ? `&search=${search}` : ""}`}
+                    size="xs"
+                  >
+                    Next
+                  </LinkButton>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+    </AnimatedPage>
   );
 }

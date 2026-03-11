@@ -115,7 +115,7 @@ export default function ImageUploader({ images, onImagesChange }: Props) {
             <div
               key={img.url}
               className={`group relative size-24 overflow-hidden rounded-lg border-2 ${
-                img.is_primary ? "border-nexifi-orange" : "border-gray-200"
+                img.is_primary ? "border-nexifi-orange" : "border-border"
               }`}
             >
               <img
@@ -164,7 +164,7 @@ export default function ImageUploader({ images, onImagesChange }: Props) {
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-sm text-gray-500 transition-colors hover:border-nexifi-orange hover:text-nexifi-orange disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-nexifi-orange hover:text-nexifi-orange disabled:opacity-50"
       >
         {uploading ? (
           <>
@@ -193,7 +193,7 @@ export default function ImageUploader({ images, onImagesChange }: Props) {
         <button
           type="button"
           onClick={() => setShowUrlInput(!showUrlInput)}
-          className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-nexifi-orange"
+          className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-nexifi-orange"
         >
           <Link className="size-3" />
           {showUrlInput ? "Hide URL input" : "Or add image by URL"}

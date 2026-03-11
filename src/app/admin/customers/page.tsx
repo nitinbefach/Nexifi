@@ -1,69 +1,88 @@
 import { getAdminCustomers } from "@/lib/supabase/admin-queries";
 import { formatINR } from "@/lib/utils";
+import AnimatedPage from "@/components/admin/AnimatedPage";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function AdminCustomersPage() {
   const { customers } = await getAdminCustomers();
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">Customers</h2>
-      <p className="mt-2 text-sm text-gray-500">
-        {customers.length} unique customer{customers.length !== 1 ? "s" : ""} from
-        guest checkout orders.
-      </p>
+    <AnimatedPage className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
+        <p className="text-sm text-muted-foreground">
+          {customers.length} unique customer
+          {customers.length !== 1 ? "s" : ""} from guest checkout orders.
+        </p>
+      </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg bg-white shadow">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
-                <th className="px-6 py-3">Customer</th>
-                <th className="px-6 py-3">Email</th>
-                <th className="px-6 py-3">Phone</th>
-                <th className="px-6 py-3">Orders</th>
-                <th className="px-6 py-3">Total Spent</th>
-                <th className="px-6 py-3">First Order</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Customer</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Orders</TableHead>
+                <TableHead>Total Spent</TableHead>
+                <TableHead>First Order</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {customers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-gray-400">
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="py-10 text-center text-muted-foreground"
+                  >
                     No customers yet. Orders will appear here once placed.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 customers.map((customer) => (
-                  <tr key={customer.guest_email} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 font-medium text-gray-900">
+                  <TableRow key={customer.guest_email} className="admin-table-row">
+                    <TableCell className="font-medium">
                       {customer.guest_name}
-                    </td>
-                    <td className="px-6 py-3 text-gray-600">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       {customer.guest_email}
-                    </td>
-                    <td className="px-6 py-3 text-gray-600">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       {customer.guest_phone}
-                    </td>
-                    <td className="px-6 py-3 text-gray-900">
-                      {customer.order_count}
-                    </td>
-                    <td className="px-6 py-3 font-medium">
+                    </TableCell>
+                    <TableCell>{customer.order_count}</TableCell>
+                    <TableCell className="font-medium">
                       {formatINR(customer.total_spent)}
-                    </td>
-                    <td className="px-6 py-3 text-gray-500">
-                      {new Date(customer.first_order).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(customer.first_order).toLocaleDateString(
+                        "en-IN",
+                        {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        }
+                      )}
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </AnimatedPage>
   );
 }

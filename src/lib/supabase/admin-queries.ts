@@ -80,6 +80,90 @@ export async function getDashboardStats() {
 }
 
 // ============================================================
+// DASHBOARD CHARTS
+// ============================================================
+
+export interface DailyRevenuePoint {
+  date: string;
+  revenue: number;
+  orders: number;
+}
+
+export async function getDailyRevenue(days = 7): Promise<DailyRevenuePoint[]> {
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  const { data, error } = await supabaseAdmin
+    .from("orders")
+    .select("total_amount, created_at")
+    .gte("created_at", startDate.toISOString())
+    .neq("status", "cancelled");
+
+  if (error || !data) return [];
+
+  // Aggregate by date
+  const map = new Map<string, { revenue: number; orders: number }>();
+
+  // Pre-fill all dates
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    map.set(key, { revenue: 0, orders: 0 });
+  }
+
+  for (const row of data) {
+    const key = row.created_at.split("T")[0];
+    const existing = map.get(key);
+    if (existing) {
+      existing.revenue += Number(row.total_amount);
+      existing.orders += 1;
+    }
+  }
+
+  return Array.from(map.entries()).map(([date, val]) => ({
+    date,
+    revenue: Math.round(val.revenue),
+    orders: val.orders,
+  }));
+}
+
+export interface OrderStatusCount {
+  status: string;
+  count: number;
+  color: string;
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "#f59e0b",
+  confirmed: "#3b82f6",
+  shipped: "#6366f1",
+  delivered: "#22c55e",
+  cancelled: "#ef4444",
+};
+
+export async function getOrderStatusCounts(): Promise<OrderStatusCount[]> {
+  const statuses = Object.keys(STATUS_COLORS);
+
+  const results = await Promise.all(
+    statuses.map((status) =>
+      supabaseAdmin
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("status", status)
+    )
+  );
+
+  return statuses
+    .map((status, i) => ({
+      status,
+      count: results[i].count ?? 0,
+      color: STATUS_COLORS[status],
+    }))
+    .filter((s) => s.count > 0);
+}
+
+// ============================================================
 // PRODUCTS
 // ============================================================
 

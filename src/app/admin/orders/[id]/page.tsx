@@ -32,22 +32,22 @@ export default async function AdminOrderDetailPage({
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <Link
         href="/admin/orders"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to Orders
       </Link>
 
       <div className="flex items-center gap-3">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold tracking-tight">
           Order {order.order_number}
-        </h2>
+        </h1>
         <OrderStatusBadge status={order.status} />
       </div>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-muted-foreground">
         Placed on{" "}
         {new Date(order.created_at).toLocaleDateString("en-IN", {
           day: "numeric",
@@ -62,8 +62,8 @@ export default async function AdminOrderDetailPage({
         {/* Left Column */}
         <div className="space-y-6 lg:col-span-2">
           {/* Items */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-semibold text-gray-900">Order Items</h3>
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-semibold text-foreground">Order Items</h3>
             <div className="mt-3 divide-y">
               {order.items?.map(
                 (item: {
@@ -78,10 +78,10 @@ export default async function AdminOrderDetailPage({
                     className="flex items-center justify-between py-3"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-foreground">
                         {item.product_name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         Qty: {item.quantity} x {formatINR(item.unit_price)}
                       </p>
                     </div>
@@ -95,19 +95,19 @@ export default async function AdminOrderDetailPage({
           </div>
 
           {/* Customer & Shipping */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-semibold text-gray-900">
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-semibold text-foreground">
               Customer & Shipping
             </h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-xs font-medium text-gray-500">Customer</p>
+                <p className="text-xs font-medium text-muted-foreground">Customer</p>
                 <p className="mt-1 text-sm">{order.guest_name}</p>
-                <p className="text-sm text-gray-600">{order.guest_email}</p>
-                <p className="text-sm text-gray-600">{order.guest_phone}</p>
+                <p className="text-sm text-muted-foreground">{order.guest_email}</p>
+                <p className="text-sm text-muted-foreground">{order.guest_phone}</p>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500">
+                <p className="text-xs font-medium text-muted-foreground">
                   Shipping Address
                 </p>
                 <p className="mt-1 text-sm">
@@ -125,30 +125,30 @@ export default async function AdminOrderDetailPage({
           </div>
 
           {/* Shipment Info */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-card p-6 shadow">
             <div className="flex items-center gap-2">
-              <Truck className="size-4 text-gray-500" />
-              <h3 className="text-sm font-semibold text-gray-900">Shipment</h3>
+              <Truck className="size-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">Shipment</h3>
             </div>
             {shipment ? (
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">AWB Number</span>
+                  <span className="text-muted-foreground">AWB Number</span>
                   <span className="font-mono font-medium">{shipment.awb_number}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Courier</span>
+                  <span className="text-muted-foreground">Courier</span>
                   <span>{shipment.courier_name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Status</span>
+                  <span className="text-muted-foreground">Status</span>
                   <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                     {shipment.status || "pending"}
                   </span>
                 </div>
                 {shipment.estimated_delivery && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Est. Delivery</span>
+                    <span className="text-muted-foreground">Est. Delivery</span>
                     <span>{new Date(shipment.estimated_delivery).toLocaleDateString("en-IN")}</span>
                   </div>
                 )}
@@ -164,7 +164,7 @@ export default async function AdminOrderDetailPage({
                 )}
               </div>
             ) : (
-              <p className="mt-3 text-sm text-gray-400">
+              <p className="mt-3 text-sm text-muted-foreground">
                 No shipment created.{" "}
                 <Link href="/admin/shipping" className="text-nexifi-orange hover:underline">
                   Create one
@@ -175,21 +175,21 @@ export default async function AdminOrderDetailPage({
 
           {/* Returns */}
           {returns.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow">
+            <div className="rounded-lg bg-card p-6 shadow">
               <div className="flex items-center gap-2">
-                <RotateCcw className="size-4 text-gray-500" />
-                <h3 className="text-sm font-semibold text-gray-900">Return Requests</h3>
+                <RotateCcw className="size-4 text-muted-foreground" />
+                <h3 className="text-sm font-semibold text-foreground">Return Requests</h3>
               </div>
               <div className="mt-3 space-y-2">
                 {returns.map((ret: { id: string; reason: string; status: string; created_at: string }) => (
                   <Link
                     key={ret.id}
                     href={`/admin/returns/${ret.id}`}
-                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-gray-50"
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted"
                   >
                     <div>
                       <span className="font-medium capitalize">{ret.reason.replace(/_/g, " ")}</span>
-                      <span className="ml-2 text-xs text-gray-400">
+                      <span className="ml-2 text-xs text-muted-foreground">
                         {new Date(ret.created_at).toLocaleDateString("en-IN")}
                       </span>
                     </div>
@@ -215,12 +215,12 @@ export default async function AdminOrderDetailPage({
           <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
 
           {/* Order Summary */}
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-sm font-semibold text-gray-900">
+          <div className="rounded-lg bg-card p-6 shadow">
+            <h3 className="text-sm font-semibold text-foreground">
               Order Summary
             </h3>
             <div className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span>{formatINR(order.subtotal)}</span>
               </div>
@@ -233,7 +233,7 @@ export default async function AdminOrderDetailPage({
                   <span>-{formatINR(order.discount_amount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Shipping</span>
                 <span>
                   {order.shipping_charge === 0
@@ -242,13 +242,13 @@ export default async function AdminOrderDetailPage({
                 </span>
               </div>
               {order.cod_charge > 0 && (
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-muted-foreground">
                   <span>COD Charge</span>
                   <span>{formatINR(order.cod_charge)}</span>
                 </div>
               )}
               {order.gst_amount > 0 && (
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-muted-foreground">
                   <span>GST</span>
                   <span>{formatINR(order.gst_amount)}</span>
                 </div>
@@ -259,7 +259,7 @@ export default async function AdminOrderDetailPage({
                   {formatINR(order.total_amount)}
                 </span>
               </div>
-              <div className="mt-2 pt-2 text-xs text-gray-500">
+              <div className="mt-2 pt-2 text-xs text-muted-foreground">
                 Payment:{" "}
                 {order.payment_method === "cod"
                   ? "Cash on Delivery"
@@ -269,19 +269,19 @@ export default async function AdminOrderDetailPage({
           </div>
 
           {/* Invoice */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-card p-6 shadow">
             <div className="flex items-center gap-2">
-              <FileText className="size-4 text-gray-500" />
-              <h3 className="text-sm font-semibold text-gray-900">Invoice</h3>
+              <FileText className="size-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">Invoice</h3>
             </div>
             {invoice ? (
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Invoice #</span>
+                  <span className="text-muted-foreground">Invoice #</span>
                   <span className="font-medium">{invoice.invoice_number}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Amount</span>
+                  <span className="text-muted-foreground">Amount</span>
                   <span className="font-medium">{formatINR(invoice.grand_total)}</span>
                 </div>
                 <a

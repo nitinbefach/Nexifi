@@ -71,25 +71,25 @@ export default function NotificationsClient({ initialNotifications }: Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900">Notification Log</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <h2 className="text-2xl font-bold text-foreground">Notification Log</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
         {notifications.length} notification{notifications.length !== 1 ? "s" : ""} — view all system notifications sent to customers.
       </p>
 
       {/* Filter Tabs */}
-      <div className="mt-5 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <div className="mt-5 flex gap-1 rounded-lg bg-muted p-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.label}
-            <span className="ml-1.5 text-xs text-gray-400">({tab.count})</span>
+            <span className="ml-1.5 text-xs text-muted-foreground">({tab.count})</span>
           </button>
         ))}
       </div>
@@ -97,9 +97,9 @@ export default function NotificationsClient({ initialNotifications }: Props) {
       {/* Notification Cards */}
       <div className="mt-5 space-y-3">
         {filtered.length === 0 ? (
-          <div className="rounded-lg bg-white py-16 text-center shadow">
-            <Bell className="mx-auto size-10 text-gray-300" />
-            <p className="mt-3 text-sm text-gray-400">
+          <div className="rounded-lg bg-card py-16 text-center shadow-sm">
+            <Bell className="mx-auto size-10 text-muted-foreground" />
+            <p className="mt-3 text-sm text-muted-foreground">
               {activeTab === "all"
                 ? "No notifications yet."
                 : `No ${activeTab} notifications.`}
@@ -112,23 +112,23 @@ export default function NotificationsClient({ initialNotifications }: Props) {
             return (
               <div
                 key={n.id}
-                className="rounded-lg bg-white p-4 shadow"
+                className="rounded-lg bg-card p-4 shadow-sm"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-3">
-                    <div className={`rounded-lg p-2 ${CHANNEL_STYLES[n.channel] || "bg-gray-100 text-gray-600"}`}>
+                    <div className={`rounded-lg p-2 ${CHANNEL_STYLES[n.channel] || "bg-muted text-muted-foreground"}`}>
                       <ChannelIcon className="size-4" />
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
                         <span
                           className={`rounded px-1.5 py-0.5 text-[10px] font-medium uppercase ${
-                            CHANNEL_STYLES[n.channel] || "bg-gray-100 text-gray-600"
+                            CHANNEL_STYLES[n.channel] || "bg-muted text-muted-foreground"
                           }`}
                         >
                           {n.channel}
                         </span>
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-sm font-medium text-foreground">
                           {formatType(n.type)}
                         </span>
                         {n.order?.order_number && (
@@ -138,13 +138,13 @@ export default function NotificationsClient({ initialNotifications }: Props) {
                         )}
                         <span
                           className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            STATUS_STYLES[n.status] || "bg-gray-100 text-gray-600"
+                            STATUS_STYLES[n.status] || "bg-muted text-muted-foreground"
                           }`}
                         >
                           {n.status.charAt(0).toUpperCase() + n.status.slice(1)}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {formatDate(n.created_at)}
                       </p>
                     </div>

@@ -19,16 +19,16 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   return (
-    <div>
+    <div className="space-y-6">
       <Link
         href="/admin/products"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to Products
       </Link>
-      <h2 className="text-2xl font-bold text-gray-900">Edit Product</h2>
-      <p className="mt-2 text-sm text-gray-500">
+      <h1 className="text-2xl font-bold tracking-tight">Edit Product</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
         Update details for &ldquo;{product.name}&rdquo;.
       </p>
       <ProductForm product={product} categories={categories} />

@@ -40,7 +40,7 @@ const STATUS_STYLES: Record<ReturnStatus, string> = {
   rejected: "bg-red-100 text-red-800",
   pickup_scheduled: "bg-blue-100 text-blue-800",
   received: "bg-purple-100 text-purple-800",
-  refunded: "bg-gray-100 text-gray-800",
+  refunded: "bg-muted text-foreground",
 };
 
 const STATUS_LABELS: Record<ReturnStatus, string> = {
@@ -128,8 +128,8 @@ export default function ReturnsClient({ initialReturns }: Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900">Return Requests</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <h2 className="text-2xl font-bold text-foreground">Return Requests</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
         {returns.length} return request{returns.length !== 1 ? "s" : ""} — review and process customer returns.
       </p>
 
@@ -138,19 +138,19 @@ export default function ReturnsClient({ initialReturns }: Props) {
       )}
 
       {/* Filter Tabs */}
-      <div className="mt-5 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <div className="mt-5 flex gap-1 rounded-lg bg-muted p-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.label}
-            <span className="ml-1.5 text-xs text-gray-400">({tab.count})</span>
+            <span className="ml-1.5 text-xs text-muted-foreground">({tab.count})</span>
           </button>
         ))}
       </div>
@@ -158,8 +158,8 @@ export default function ReturnsClient({ initialReturns }: Props) {
       {/* Returns List */}
       <div className="mt-5 space-y-3">
         {filtered.length === 0 ? (
-          <div className="rounded-lg bg-white py-16 text-center shadow">
-            <p className="text-sm text-gray-400">
+          <div className="rounded-lg bg-card py-16 text-center shadow-sm">
+            <p className="text-sm text-muted-foreground">
               {activeTab === "all"
                 ? "No return requests yet."
                 : `No ${activeTab} return requests.`}
@@ -172,16 +172,16 @@ export default function ReturnsClient({ initialReturns }: Props) {
             return (
               <div
                 key={ret.id}
-                className="rounded-lg bg-white p-4 shadow"
+                className="rounded-lg bg-card p-4 shadow-sm"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex-1">
                     {/* Order Number + Status */}
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         Order {ret.order?.order_number || "N/A"}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {ret.order?.guest_name || "Unknown"}
                       </span>
                       <span
@@ -194,20 +194,20 @@ export default function ReturnsClient({ initialReturns }: Props) {
                     </div>
 
                     {/* Reason */}
-                    <p className="mt-1.5 text-sm font-medium text-gray-800">
+                    <p className="mt-1.5 text-sm font-medium text-foreground">
                       {getReasonLabel(ret.reason)}
                     </p>
 
                     {/* Description (truncated) */}
                     {ret.description && (
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {ret.description.length > 120
                           ? `${ret.description.slice(0, 120)}...`
                           : ret.description}
                       </p>
                     )}
 
-                    <p className="mt-1.5 text-xs text-gray-400">
+                    <p className="mt-1.5 text-xs text-muted-foreground">
                       {new Date(ret.created_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
@@ -219,12 +219,12 @@ export default function ReturnsClient({ initialReturns }: Props) {
                   {/* Actions */}
                   <div className="flex items-center gap-2">
                     {isLoading ? (
-                      <Loader2 className="size-4 animate-spin text-gray-400" />
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
                     ) : (
                       <>
                         <Link
                           href={`/admin/returns/${ret.id}`}
-                          className="flex items-center gap-1 rounded-md border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                          className="flex items-center gap-1 rounded-md border border-border px-3 py-1 text-xs font-medium text-foreground hover:bg-muted"
                           title="View Details"
                         >
                           <Eye className="size-3.5" /> View
@@ -249,7 +249,7 @@ export default function ReturnsClient({ initialReturns }: Props) {
                         )}
                         <button
                           onClick={() => handleDelete(ret.id)}
-                          className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                          className="rounded p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                           title="Delete"
                         >
                           <Trash2 className="size-4" />

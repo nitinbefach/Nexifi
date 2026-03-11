@@ -194,11 +194,11 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             Manage product categories. {categories.length} total.
           </p>
         </div>
@@ -219,8 +219,8 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
 
       {/* Add Form */}
       {showAdd && (
-        <div className="mt-4 rounded-lg border bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900">New Category</h3>
+        <div className="mt-4 rounded-lg border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold">New Category</h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <input
               type="text"
@@ -255,7 +255,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
             </button>
             <button
               onClick={resetForm}
-              className="rounded-md border px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              className="rounded-md border px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
             >
               Cancel
             </button>
@@ -264,9 +264,9 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
       )}
 
       {/* Category List */}
-      <div className="mt-6 divide-y rounded-lg bg-white shadow">
+      <div className="mt-6 divide-y rounded-lg bg-card shadow-sm">
         {categories.length === 0 ? (
-          <div className="px-6 py-10 text-center text-sm text-gray-400">
+          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
             No categories yet. Add your first category above.
           </div>
         ) : (
@@ -306,7 +306,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                       </button>
                       <button
                         onClick={resetForm}
-                        className="rounded-md border p-2 text-gray-400 hover:text-gray-600"
+                        className="rounded-md border p-2 text-muted-foreground hover:text-foreground"
                       >
                         <X className="size-4" />
                       </button>
@@ -318,7 +318,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                     <button
                       type="button"
                       onClick={() => setShowProducts(!showProducts)}
-                      className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-nexifi-orange"
+                      className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-nexifi-orange"
                     >
                       {showProducts ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
                       Assign Products ({selectedProductIds.length} selected)
@@ -327,7 +327,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                     {showProducts && (
                       <div className="mt-2 max-h-60 overflow-y-auto rounded-md border p-3">
                         {products.length === 0 ? (
-                          <p className="text-xs text-gray-400">No products available.</p>
+                          <p className="text-xs text-muted-foreground">No products available.</p>
                         ) : (
                           <div className="space-y-1.5">
                             {products.map((product) => {
@@ -343,8 +343,8 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                                   key={product.id}
                                   className={`flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm transition-colors ${
                                     isSelected
-                                      ? "bg-orange-50 text-gray-900"
-                                      : "text-gray-600 hover:bg-gray-50"
+                                      ? "bg-orange-50"
+                                      : "text-muted-foreground hover:bg-muted"
                                   }`}
                                 >
                                   <input
@@ -355,7 +355,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                                   />
                                   <span className="flex-1">{product.name}</span>
                                   {otherCategory && (
-                                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500">
+                                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
                                       in {otherCategory}
                                     </span>
                                   )}
@@ -375,17 +375,17 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => startEdit(cat)}
-                        className="text-sm font-medium text-gray-900 hover:text-nexifi-orange hover:underline"
+                        className="text-sm font-medium hover:text-nexifi-orange hover:underline"
                       >
                         {cat.name}
                       </button>
                       {!cat.is_active && (
-                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
                           Inactive
                         </span>
                       )}
                     </div>
-                    <p className="mt-0.5 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {cat.product_count} product{cat.product_count !== 1 ? "s" : ""}
                       {cat.description ? ` · ${cat.description}` : ""}
                     </p>
@@ -393,14 +393,14 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => startEdit(cat)}
-                      className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
                       title="Edit"
                     >
                       <Pencil className="size-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(cat.id, cat.name)}
-                      className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                      className="rounded p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                       title="Delete"
                     >
                       <Trash2 className="size-4" />

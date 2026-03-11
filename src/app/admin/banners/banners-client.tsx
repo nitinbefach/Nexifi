@@ -239,8 +239,8 @@ export default function BannersClient({ initialBanners }: Props) {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Banners</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Banners</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             {banners.length} banner{banners.length !== 1 ? "s" : ""} — displayed on the storefront hero section.
           </p>
         </div>
@@ -260,12 +260,12 @@ export default function BannersClient({ initialBanners }: Props) {
 
       {/* Inline Form */}
       {showForm && (
-        <div className="mt-4 rounded-lg bg-white p-5 shadow">
+        <div className="mt-4 rounded-lg bg-card p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-foreground">
               {editingId ? "Edit Banner" : "New Banner"}
             </h3>
-            <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+            <button onClick={resetForm} className="text-muted-foreground hover:text-foreground">
               <X className="size-5" />
             </button>
           </div>
@@ -296,7 +296,7 @@ export default function BannersClient({ initialBanners }: Props) {
 
             {/* Desktop Image */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-foreground">
                 Desktop Image <span className="text-red-500">*</span>
               </label>
               <div className="mt-1 flex gap-2">
@@ -311,7 +311,7 @@ export default function BannersClient({ initialBanners }: Props) {
                   type="button"
                   onClick={() => desktopFileRef.current?.click()}
                   disabled={uploading === "desktop"}
-                  className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
                 >
                   {uploading === "desktop" ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -332,8 +332,8 @@ export default function BannersClient({ initialBanners }: Props) {
 
             {/* Mobile Image */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Mobile Image <span className="text-xs text-gray-400">(optional)</span>
+              <label className="block text-sm font-medium text-foreground">
+                Mobile Image <span className="text-xs text-muted-foreground">(optional)</span>
               </label>
               <div className="mt-1 flex gap-2">
                 <input
@@ -347,7 +347,7 @@ export default function BannersClient({ initialBanners }: Props) {
                   type="button"
                   onClick={() => mobileFileRef.current?.click()}
                   disabled={uploading === "mobile"}
-                  className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
                 >
                   {uploading === "mobile" ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -369,13 +369,13 @@ export default function BannersClient({ initialBanners }: Props) {
             {/* Enhanced Preview */}
             {(formImageUrl || formMobileImageUrl) && (
               <div className="sm:col-span-2">
-                <p className="mb-2 text-xs font-medium text-gray-500">Preview</p>
+                <p className="mb-2 text-xs font-medium text-muted-foreground">Preview</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {/* Desktop Preview */}
                   {formImageUrl && (
                     <div>
-                      <p className="mb-1 text-xs font-medium text-gray-600">Desktop</p>
-                      <div className="relative overflow-hidden rounded-lg border bg-gray-100" style={{ aspectRatio: `${RECOMMENDED.desktop.w} / ${RECOMMENDED.desktop.h}` }}>
+                      <p className="mb-1 text-xs font-medium text-muted-foreground">Desktop</p>
+                      <div className="relative overflow-hidden rounded-lg border bg-muted" style={{ aspectRatio: `${RECOMMENDED.desktop.w} / ${RECOMMENDED.desktop.h}` }}>
                         <img
                           src={formImageUrl}
                           alt="Desktop preview"
@@ -396,10 +396,10 @@ export default function BannersClient({ initialBanners }: Props) {
 
                   {/* Mobile Preview */}
                   <div>
-                    <p className="mb-1 text-xs font-medium text-gray-600">Mobile</p>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Mobile</p>
                     {formMobileImageUrl ? (
                       <>
-                        <div className="relative overflow-hidden rounded-lg border bg-gray-100" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
+                        <div className="relative overflow-hidden rounded-lg border bg-muted" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
                           <img
                             src={formMobileImageUrl}
                             alt="Mobile preview"
@@ -417,8 +417,8 @@ export default function BannersClient({ initialBanners }: Props) {
                         {renderDimStatus(mobileDims, "mobile")}
                       </>
                     ) : (
-                      <div className="flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-6 text-center" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
-                        <p className="text-xs text-gray-400">
+                      <div className="flex items-center justify-center rounded-lg border border-dashed border-border bg-muted px-3 py-6 text-center" style={{ aspectRatio: `${RECOMMENDED.mobile.w} / ${RECOMMENDED.mobile.h}` }}>
+                        <p className="text-xs text-muted-foreground">
                           No mobile image — desktop image will be used on all screen sizes
                         </p>
                       </div>
@@ -429,7 +429,7 @@ export default function BannersClient({ initialBanners }: Props) {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Title</label>
+              <label className="block text-sm font-medium text-foreground">Title</label>
               <input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
@@ -439,7 +439,7 @@ export default function BannersClient({ initialBanners }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Link URL</label>
+              <label className="block text-sm font-medium text-foreground">Link URL</label>
               <input
                 value={formLinkUrl}
                 onChange={(e) => setFormLinkUrl(e.target.value)}
@@ -449,7 +449,7 @@ export default function BannersClient({ initialBanners }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Sort Order</label>
+              <label className="block text-sm font-medium text-foreground">Sort Order</label>
               <input
                 type="number"
                 value={formSortOrder}
@@ -464,7 +464,7 @@ export default function BannersClient({ initialBanners }: Props) {
                   type="checkbox"
                   checked={formIsActive}
                   onChange={(e) => setFormIsActive(e.target.checked)}
-                  className="rounded border-gray-300 text-nexifi-orange focus:ring-nexifi-orange"
+                  className="rounded border-border text-nexifi-orange focus:ring-nexifi-orange"
                 />
                 Active
               </label>
@@ -474,7 +474,7 @@ export default function BannersClient({ initialBanners }: Props) {
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={resetForm}
-              className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-md border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >
               Cancel
             </button>
@@ -493,19 +493,19 @@ export default function BannersClient({ initialBanners }: Props) {
       {/* Banner Grid */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {banners.length === 0 ? (
-          <div className="col-span-full rounded-lg bg-white py-16 text-center shadow">
-            <ImageIcon className="mx-auto size-10 text-gray-300" />
-            <p className="mt-3 text-sm text-gray-400">No banners yet. Add one to get started.</p>
+          <div className="col-span-full rounded-lg bg-card py-16 text-center shadow-sm">
+            <ImageIcon className="mx-auto size-10 text-muted-foreground" />
+            <p className="mt-3 text-sm text-muted-foreground">No banners yet. Add one to get started.</p>
           </div>
         ) : (
           banners.map((b) => (
             <div
               key={b.id}
-              className={`overflow-hidden rounded-lg bg-white shadow ${
+              className={`overflow-hidden rounded-lg bg-card shadow ${
                 !b.is_active ? "opacity-60" : ""
               }`}
             >
-              <div className="relative h-40 bg-gray-200">
+              <div className="relative h-40 bg-muted">
                 <img
                   src={b.image_url}
                   alt={b.title || "Banner"}
@@ -523,14 +523,14 @@ export default function BannersClient({ initialBanners }: Props) {
               <div className="flex items-center justify-between p-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {b.title || "Untitled Banner"}
                     </p>
                     <span className="rounded bg-orange-50 px-1.5 py-0.5 text-[10px] font-medium text-orange-600">
                       Hero Banner
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs text-gray-500">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     Position: {b.sort_order}
                     {b.link_url && ` · Links to ${b.link_url}`}
                   </p>
@@ -538,14 +538,14 @@ export default function BannersClient({ initialBanners }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => startEdit(b)}
-                    className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                    className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
                     title="Edit"
                   >
                     <Pencil className="size-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(b.id)}
-                    className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                    className="rounded p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600"
                     title="Delete"
                   >
                     <Trash2 className="size-4" />

@@ -45,8 +45,8 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
   };
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow">
-      <h3 className="text-sm font-semibold text-gray-900">Update Status</h3>
+    <div className="rounded-lg border bg-card p-6 shadow-sm">
+      <h3 className="text-sm font-semibold">Update Status</h3>
       <div className="mt-3 space-y-3">
         <select
           value={status}

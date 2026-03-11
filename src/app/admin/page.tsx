@@ -1,101 +1,147 @@
-import { getDashboardStats } from "@/lib/supabase/admin-queries";
+import {
+  getDashboardStats,
+  getDailyRevenue,
+  getOrderStatusCounts,
+} from "@/lib/supabase/admin-queries";
 import { formatINR } from "@/lib/utils";
 import StatsCard from "@/components/admin/StatsCard";
+import DashboardCharts from "@/components/admin/DashboardCharts";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
-import { DollarSign, ShoppingCart, Clock, AlertTriangle } from "lucide-react";
+import AnimatedPage from "@/components/admin/AnimatedPage";
+import {
+  IndianRupee,
+  ShoppingCart,
+  Clock,
+  AlertTriangle,
+  ArrowRight,
+} from "lucide-react";
 import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import LinkButton from "@/components/admin/LinkButton";
 
 export default async function AdminDashboardPage() {
-  const stats = await getDashboardStats();
+  const [stats, revenueData, statusData] = await Promise.all([
+    getDashboardStats(),
+    getDailyRevenue(7),
+    getOrderStatusCounts(),
+  ]);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-      <p className="mt-2 text-sm text-gray-500">
-        Overview of your store performance and recent activity.
-      </p>
+    <AnimatedPage className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
+          Overview of your store performance and recent activity.
+        </p>
+      </div>
 
       {/* Stats Cards */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Revenue"
           value={formatINR(Number(stats.totalRevenue))}
-          icon={<DollarSign className="size-5" />}
+          icon={<IndianRupee className="size-5" />}
+          colorVariant="emerald"
+          index={0}
         />
         <StatsCard
           title="Total Orders"
           value={stats.totalOrders}
           icon={<ShoppingCart className="size-5" />}
+          colorVariant="blue"
+          index={1}
         />
         <StatsCard
           title="Pending Orders"
           value={stats.pendingOrders}
           icon={<Clock className="size-5" />}
+          colorVariant="orange"
+          index={2}
         />
         <StatsCard
           title="Low Stock Products"
           value={stats.lowStockProducts}
           icon={<AlertTriangle className="size-5" />}
+          colorVariant="red"
+          index={3}
         />
       </div>
 
-      {/* Recent Orders */}
-      <div className="mt-8 rounded-lg bg-white shadow">
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <h3 className="text-sm font-semibold text-gray-900">Recent Orders</h3>
-          <Link
-            href="/admin/orders"
-            className="text-xs font-medium text-nexifi-orange hover:underline"
-          >
-            View All
-          </Link>
-        </div>
+      {/* Charts */}
+      <DashboardCharts revenueData={revenueData} statusData={statusData} />
 
-        {stats.recentOrders.length === 0 ? (
-          <div className="px-6 py-10 text-center text-sm text-gray-400">
-            No orders yet.
+      {/* Recent Orders */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Recent Orders</CardTitle>
+            <CardDescription>Latest orders from your store</CardDescription>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-left text-xs font-medium text-gray-500">
-                  <th className="px-6 py-3">Order #</th>
-                  <th className="px-6 py-3">Customer</th>
-                  <th className="px-6 py-3">Amount</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
+          <LinkButton href="/admin/orders" className="gap-1.5">
+            View All
+            <ArrowRight className="size-3.5" />
+          </LinkButton>
+        </CardHeader>
+        <CardContent>
+          {stats.recentOrders.length === 0 ? (
+            <div className="py-10 text-center text-sm text-muted-foreground">
+              No orders yet.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order #</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {stats.recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-3 font-medium">
-                      {order.order_number}
-                    </td>
-                    <td className="px-6 py-3 text-gray-600">
-                      {order.guest_name}
-                    </td>
-                    <td className="px-6 py-3">
-                      {formatINR(order.total_amount)}
-                    </td>
-                    <td className="px-6 py-3">
+                  <TableRow key={order.id} className="admin-table-row">
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className="hover:text-nexifi-orange hover:underline"
+                      >
+                        {order.order_number}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{order.guest_name}</TableCell>
+                    <TableCell>{formatINR(order.total_amount)}</TableCell>
+                    <TableCell>
                       <OrderStatusBadge status={order.status} />
-                    </td>
-                    <td className="px-6 py-3 text-gray-500">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       {new Date(order.created_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </AnimatedPage>
   );
 }
