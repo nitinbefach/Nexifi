@@ -1,54 +1,147 @@
-export default function AdminDashboardPage() {
-  const stats = [
-    { label: "Total Revenue", value: "$12,450.00", change: "+8.2%" },
-    { label: "Orders Today", value: "24", change: "+12%" },
-    { label: "Pending Orders", value: "7", change: "-3%" },
-    { label: "Low Stock", value: "5", change: "" },
-  ];
+import {
+  getDashboardStats,
+  getDailyRevenue,
+  getOrderStatusCounts,
+} from "@/lib/supabase/admin-queries";
+import { formatINR } from "@/lib/utils";
+import StatsCard from "@/components/admin/StatsCard";
+import DashboardCharts from "@/components/admin/DashboardCharts";
+import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
+import AnimatedPage from "@/components/admin/AnimatedPage";
+import {
+  IndianRupee,
+  ShoppingCart,
+  Clock,
+  AlertTriangle,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import LinkButton from "@/components/admin/LinkButton";
+
+export default async function AdminDashboardPage() {
+  const [stats, revenueData, statusData] = await Promise.all([
+    getDashboardStats(),
+    getDailyRevenue(7),
+    getOrderStatusCounts(),
+  ]);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-      <p className="mt-2 text-sm text-gray-500">
-        Overview of your store performance, key metrics, and recent activity on
-        NEXIFI.
-      </p>
+    <AnimatedPage className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
+          Overview of your store performance and recent activity.
+        </p>
+      </div>
 
       {/* Stats Cards */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-white rounded-lg shadow p-5"
-          >
-            <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
-              {stat.value}
-            </p>
-            {stat.change && (
-              <p
-                className={`mt-1 text-xs font-medium ${
-                  stat.change.startsWith("+")
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                {stat.change} from yesterday
-              </p>
-            )}
-          </div>
-        ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total Revenue"
+          value={formatINR(Number(stats.totalRevenue))}
+          icon={<IndianRupee className="size-5" />}
+          colorVariant="emerald"
+          index={0}
+        />
+        <StatsCard
+          title="Total Orders"
+          value={stats.totalOrders}
+          icon={<ShoppingCart className="size-5" />}
+          colorVariant="blue"
+          index={1}
+        />
+        <StatsCard
+          title="Pending Orders"
+          value={stats.pendingOrders}
+          icon={<Clock className="size-5" />}
+          colorVariant="orange"
+          index={2}
+        />
+        <StatsCard
+          title="Low Stock Products"
+          value={stats.lowStockProducts}
+          icon={<AlertTriangle className="size-5" />}
+          colorVariant="red"
+          index={3}
+        />
       </div>
 
-      {/* Placeholder Chart Area */}
-      <div className="mt-8 bg-white rounded-lg shadow p-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-4">
-          Revenue Overview
-        </h3>
-        <div className="h-64 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center text-sm text-gray-400">
-          Chart Placeholder &mdash; Revenue data visualization will appear here
-        </div>
-      </div>
-    </div>
+      {/* Charts */}
+      <DashboardCharts revenueData={revenueData} statusData={statusData} />
+
+      {/* Recent Orders */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Recent Orders</CardTitle>
+            <CardDescription>Latest orders from your store</CardDescription>
+          </div>
+          <LinkButton href="/admin/orders" className="gap-1.5">
+            View All
+            <ArrowRight className="size-3.5" />
+          </LinkButton>
+        </CardHeader>
+        <CardContent>
+          {stats.recentOrders.length === 0 ? (
+            <div className="py-10 text-center text-sm text-muted-foreground">
+              No orders yet.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order #</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stats.recentOrders.map((order) => (
+                  <TableRow key={order.id} className="admin-table-row">
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className="hover:text-nexifi-orange hover:underline"
+                      >
+                        {order.order_number}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{order.guest_name}</TableCell>
+                    <TableCell>{formatINR(order.total_amount)}</TableCell>
+                    <TableCell>
+                      <OrderStatusBadge status={order.status} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(order.created_at).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </AnimatedPage>
   );
 }

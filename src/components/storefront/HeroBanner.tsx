@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Banner } from "@/lib/supabase/queries";
 
 const fallbackSlides = [
@@ -41,50 +43,115 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
       : fallbackSlides;
 
   const [current, setCurrent] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
 
-  const next = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % slides.length);
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 5000);
   }, [slides.length]);
 
-  useEffect(() => {
-    const timer = setInterval(next, 5000);
-    return () => clearInterval(timer);
-  }, [next]);
+  const goTo = useCallback(
+    (index: number) => {
+      if (isTransitioning || index === current) return;
+      setIsTransitioning(true);
+      setCurrent(index);
+      resetTimer();
+      setTimeout(() => setIsTransitioning(false), 600);
+    },
+    [current, isTransitioning, resetTimer]
+  );
 
-  const slide = slides[current];
+  const prev = useCallback(
+    () => goTo((current - 1 + slides.length) % slides.length),
+    [current, slides.length, goTo]
+  );
+  const next = useCallback(
+    () => goTo((current + 1) % slides.length),
+    [current, slides.length, goTo]
+  );
+
+  useEffect(() => {
+    resetTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [resetTimer]);
 
   return (
-    <section className="relative w-full overflow-hidden">
-      <Link href={slide.href} className="group/banner block">
-        <div className="relative h-[180px] bg-neutral-900 sm:h-[250px] md:h-[420px] lg:h-[460px] xl:h-[500px]">
-          <picture>
-            <source media="(min-width: 768px)" srcSet={slide.desktop} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+    <section className="group/hero relative w-full overflow-hidden bg-neutral-900">
+      {/* Slides */}
+      <div className="relative h-[200px] sm:h-[280px] md:h-[420px] lg:h-[460px] xl:h-[500px]">
+        {slides.map((slide, i) => (
+          <Link
+            key={i}
+            href={slide.href}
+            className={`absolute inset-0 transition-opacity duration-600 ease-in-out ${
+              i === current ? "z-10 opacity-100" : "z-0 opacity-0"
+            }`}
+            tabIndex={i === current ? 0 : -1}
+          >
+            {/* Mobile image */}
+            <Image
               src={slide.mobile}
               alt={slide.alt}
-              className="size-full object-cover transition-all duration-700 group-hover/banner:brightness-[0.97]"
-              loading={current === 0 ? "eager" : "lazy"}
+              fill
+              sizes="100vw"
+              className="object-cover md:hidden"
+              priority={i === 0}
             />
-          </picture>
-        </div>
-      </Link>
-
-      {/* Dot Indicators */}
-      <div className="absolute bottom-2.5 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 sm:bottom-5 md:bottom-6">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === current
-                ? "w-6 bg-white sm:w-8"
-                : "w-2 bg-white/40 hover:bg-white/60"
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
-          />
+            {/* Desktop image */}
+            <Image
+              src={slide.desktop}
+              alt={slide.alt}
+              fill
+              sizes="100vw"
+              className="hidden object-cover md:block"
+              priority={i === 0}
+            />
+          </Link>
         ))}
       </div>
+
+      {/* Arrow Controls — desktop only */}
+      {slides.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/80 p-2 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:scale-110 group-hover/hero:flex lg:left-5 lg:p-2.5"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="size-5 text-gray-800 lg:size-6" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/80 p-2 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:scale-110 group-hover/hero:flex lg:right-5 lg:p-2.5"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="size-5 text-gray-800 lg:size-6" />
+          </button>
+        </>
+      )}
+
+      {/* Dot Indicators */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-5 md:bottom-6">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-7 bg-white shadow-sm sm:w-8"
+                  : "w-2 bg-white/50 hover:bg-white/70"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

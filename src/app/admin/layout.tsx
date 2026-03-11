@@ -1,156 +1,284 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Loader2, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  Tag,
+  ShoppingCart,
+  Users,
+  Ticket,
+  Image as ImageIcon,
+  Star,
+  RotateCcw,
+  Truck,
+  FileText,
+  Bell,
+  Settings,
+  LogOut,
+  Loader2,
+  ChevronRight,
+  ExternalLink,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import LinkButton from "@/components/admin/LinkButton";
 
-const navItems = [
-  { label: "Dashboard", href: "/admin" },
-  { label: "Products", href: "/admin/products" },
-  { label: "Categories", href: "/admin/categories" },
-  { label: "Orders", href: "/admin/orders" },
-  { label: "Customers", href: "/admin/customers" },
-  { label: "Coupons", href: "/admin/coupons" },
-  { label: "Banners", href: "/admin/banners" },
-  { label: "Reviews", href: "/admin/reviews" },
-  { label: "Returns", href: "/admin/returns" },
-  { label: "Shipping", href: "/admin/shipping" },
-  { label: "Invoices", href: "/admin/invoices" },
-  { label: "Notifications", href: "/admin/notifications" },
-  { label: "Settings", href: "/admin/settings" },
+const mainNavItems = [
+  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Products", href: "/admin/products", icon: Package },
+  { label: "Categories", href: "/admin/categories", icon: Tag },
+  { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { label: "Customers", href: "/admin/customers", icon: Users },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const managementNavItems = [
+  { label: "Coupons", href: "/admin/coupons", icon: Ticket },
+  { label: "Banners", href: "/admin/banners", icon: ImageIcon },
+  { label: "Reviews", href: "/admin/reviews", icon: Star },
+  { label: "Returns", href: "/admin/returns", icon: RotateCcw },
+];
+
+const operationsNavItems = [
+  { label: "Shipping", href: "/admin/shipping", icon: Truck },
+  { label: "Invoices", href: "/admin/invoices", icon: FileText },
+  { label: "Notifications", href: "/admin/notifications", icon: Bell },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
+];
+
+function AdminSidebar() {
   const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+  const renderNavGroup = (
+    label: string,
+    items: typeof mainNavItems
+  ) => (
+    <SidebarGroup>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                render={<Link href={item.href} />}
+                isActive={isActive(item.href)}
+                tooltip={item.label}
+              >
+                <item.icon />
+                <span>{item.label}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+
+  return (
+    <Sidebar collapsible="icon" variant="sidebar">
+      <SidebarHeader className="border-b border-sidebar-border">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" render={<Link href="/admin" />}>
+              <div className="flex size-8 items-center justify-center rounded-lg bg-nexifi-orange text-white">
+                <LayoutDashboard className="size-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none">
+                <span className="font-semibold">NEXIFI</span>
+                <span className="text-xs text-muted-foreground">
+                  Admin Panel
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent>
+        {renderNavGroup("Main", mainNavItems)}
+        {renderNavGroup("Management", managementNavItems)}
+        {renderNavGroup("Operations", operationsNavItems)}
+      </SidebarContent>
+
+      <SidebarFooter>
+        <AdminUserMenu />
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+function AdminUserMenu() {
+  const { profile, signOut } = useAuth();
   const router = useRouter();
-  const { loading, isAdmin, profile, signOut } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Show loading spinner while checking auth
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="size-8 animate-spin text-nexifi-orange" />
-          <p className="text-sm text-gray-500">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect non-admin users to login
-  if (!isAdmin) {
-    router.push("/login");
-    return null;
-  }
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/login");
   };
 
+  const initials = profile?.full_name
+    ? profile.full_name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "AD";
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-gray-900 text-white transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex h-16 items-center justify-between border-b border-gray-800 px-4">
-          <Link href="/admin" className="text-lg font-bold tracking-wide">
-            NEXIFI Admin
-          </Link>
-          <button
-            className="text-gray-400 hover:text-white lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            ✕
-          </button>
-        </div>
-        <nav className="mt-4 max-h-[calc(100vh-8rem)] space-y-1 overflow-y-auto px-2">
-          {navItems.map((item) => {
-            const isActive =
-              item.href === "/admin"
-                ? pathname === "/admin"
-                : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-gray-800 text-white"
-                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Sign Out at bottom */}
-        <div className="absolute bottom-0 left-0 w-full border-t border-gray-800 p-3">
-          <button
-            onClick={handleSignOut}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
-          >
-            <LogOut className="size-4" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top Bar */}
-        <header className="flex h-16 items-center bg-white px-4 shadow lg:px-8">
-          <button
-            className="mr-4 text-gray-600 hover:text-gray-900 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <svg
-              className="size-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent"
               />
-            </svg>
-          </button>
-          <h1 className="text-lg font-semibold text-gray-900">
-            NEXIFI Store Admin
-          </h1>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="hidden text-sm text-gray-500 sm:block">
-              {profile?.full_name || "Admin"}
-            </span>
-          </div>
-        </header>
+            }
+          >
+            <Avatar className="size-8">
+              <AvatarFallback className="bg-nexifi-orange text-white text-xs">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {profile?.full_name || "Admin"}
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
+                Administrator
+              </span>
+            </div>
+            <ChevronRight className="ml-auto size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-56"
+            side="right"
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuItem render={<Link href="/admin/settings" />}>
+              <Settings className="mr-2 size-4" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive focus:text-destructive"
+            >
+              <LogOut className="mr-2 size-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
 
-        <main className="flex-1 p-4 lg:p-8">{children}</main>
+function AdminHeader() {
+  const pathname = usePathname();
+
+  // Build breadcrumbs
+  const segments = pathname.split("/").filter(Boolean);
+  const breadcrumbs = segments.map((seg, i) => ({
+    label: seg.charAt(0).toUpperCase() + seg.slice(1),
+    href: "/" + segments.slice(0, i + 1).join("/"),
+    isLast: i === segments.length - 1,
+  }));
+
+  return (
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4 lg:px-6">
+      <SidebarTrigger className="-ml-1" />
+      <Separator orientation="vertical" className="mr-2 h-4" />
+
+      <nav className="flex items-center gap-1.5 text-sm">
+        {breadcrumbs.map((crumb, i) => (
+          <React.Fragment key={crumb.href}>
+            {i > 0 && (
+              <ChevronRight className="size-3.5 text-muted-foreground" />
+            )}
+            {crumb.isLast ? (
+              <span className="font-medium text-foreground">
+                {crumb.label}
+              </span>
+            ) : (
+              <Link
+                href={crumb.href}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {crumb.label}
+              </Link>
+            )}
+          </React.Fragment>
+        ))}
+      </nav>
+
+      <div className="ml-auto flex items-center gap-2">
+        <LinkButton href="/" className="gap-1.5">
+          View Store
+          <ExternalLink className="size-3" />
+        </LinkButton>
       </div>
-    </div>
+    </header>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="size-8 animate-spin text-nexifi-orange" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <TooltipProvider>
+      <SidebarProvider>
+        <AdminSidebar />
+        <SidebarInset>
+          <AdminHeader />
+          <main className="flex-1 p-4 font-poppins lg:p-6">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }
