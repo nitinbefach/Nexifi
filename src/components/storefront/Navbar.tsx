@@ -8,7 +8,6 @@ import { Menu, Search, ShoppingCart, Phone, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/stores/ui-store";
 import { useCartStore } from "@/stores/cart-store";
-import { createClient } from "@/lib/supabase/client";
 import SearchBar from "./SearchBar";
 
 interface NavCategory {
@@ -24,7 +23,11 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  categories: NavCategory[];
+}
+
+export default function Navbar({ categories }: NavbarProps) {
   const pathname = usePathname();
   const { toggleMobileMenu, isSearchOpen, toggleSearch } = useUIStore();
   const itemCount = useCartStore((s) => s.getItemCount());
@@ -32,7 +35,6 @@ export default function Navbar() {
   const isHomepage = pathname === "/";
 
   const [scrolled, setScrolled] = useState(false);
-  const [categories, setCategories] = useState<NavCategory[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -47,18 +49,6 @@ export default function Navbar() {
     return () => {
       if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
     };
-  }, []);
-
-  // Fetch categories for dropdown
-  useEffect(() => {
-    createClient()
-      .from("categories")
-      .select("id, name, slug")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        if (data) setCategories(data);
-      });
   }, []);
 
   const openDropdown = () => {
