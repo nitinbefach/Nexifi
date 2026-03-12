@@ -6,41 +6,19 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Banner } from "@/lib/supabase/queries";
 
-const fallbackSlides = [
-  {
-    mobile: "/banners/banner-1.png",
-    desktop: "/banners/banner-1-desktop.png",
-    alt: "Premium Accessory Days — Uninterrupted Productivity, Immersive Entertainment",
-    href: "/products",
-  },
-  {
-    mobile: "/banners/banner-2.png",
-    desktop: "/banners/banner-2-desktop.png",
-    alt: "Dominate the Game, Immerse in Sound — Free Express Shipping + 20% Off",
-    href: "/products",
-  },
-  {
-    mobile: "/banners/banner-3.png",
-    desktop: "/banners/banner-3-desktop.png",
-    alt: "Dominate the Game — Save 30% on All Gaming Accessories",
-    href: "/products",
-  },
-];
-
 interface HeroBannerProps {
   banners?: Banner[];
 }
 
 export default function HeroBanner({ banners }: HeroBannerProps) {
-  const slides =
-    banners && banners.length > 0
-      ? banners.map((b) => ({
-          mobile: b.mobile_image_url || b.image_url,
-          desktop: b.image_url,
-          alt: b.title || "NEXIFI Banner",
-          href: b.link_url || "/products",
-        }))
-      : fallbackSlides;
+  if (!banners || banners.length === 0) return null;
+
+  const slides = banners.map((b) => ({
+    mobile: b.mobile_image_url || b.image_url,
+    desktop: b.image_url,
+    alt: b.title || "NEXIFI Banner",
+    href: b.link_url || "/products",
+  }));
 
   const [current, setCurrent] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
