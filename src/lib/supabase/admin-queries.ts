@@ -231,6 +231,59 @@ export async function updateProduct(id: string, productData: Record<string, unkn
   return { product: data, error };
 }
 
+export interface BulkInsertResult {
+  success: number;
+  failed: number;
+  errors: { row: number; messages: string[] }[];
+  createdIds: string[];
+}
+
+export async function createProductsBatch(
+  rows: {
+    row: number;
+    product: Record<string, unknown>;
+    images: string[];
+  }[]
+): Promise<BulkInsertResult> {
+  const result: BulkInsertResult = {
+    success: 0,
+    failed: 0,
+    errors: [],
+    createdIds: [],
+  };
+
+  for (const { row, product, images } of rows) {
+    const { product: created, error } = await createProduct(product);
+
+    if (error || !created) {
+      result.failed++;
+      result.errors.push({
+        row,
+        messages: [error?.message || "Unknown insert error"],
+      });
+      continue;
+    }
+
+    result.success++;
+    result.createdIds.push(created.id);
+
+    // Insert product images
+    const validImages = images.filter((url) => url && url.trim() !== "");
+    if (validImages.length > 0) {
+      await supabaseAdmin.from("product_images").insert(
+        validImages.map((url, i) => ({
+          product_id: created.id,
+          image_url: url.trim(),
+          is_primary: i === 0,
+          sort_order: i,
+        }))
+      );
+    }
+  }
+
+  return result;
+}
+
 export async function deleteProduct(id: string) {
   // Delete images and variants first (cascade should handle this, but be safe)
   await supabaseAdmin.from("product_images").delete().eq("product_id", id);
