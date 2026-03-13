@@ -1,4 +1,4 @@
-import { getAdminProducts } from "@/lib/supabase/admin-queries";
+import { getAdminProducts, getAdminCategories } from "@/lib/supabase/admin-queries";
 import { Plus, Upload } from "lucide-react";
 import LinkButton from "@/components/admin/LinkButton";
 import AnimatedPage from "@/components/admin/AnimatedPage";
@@ -20,7 +20,10 @@ export default async function AdminProductsPage({
   const search = sp.search || "";
   const limit = 20;
 
-  const { products, total } = await getAdminProducts(page, search, limit);
+  const [{ products, total }, categories] = await Promise.all([
+    getAdminProducts(page, search, limit),
+    getAdminCategories(),
+  ]);
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -61,6 +64,7 @@ export default async function AdminProductsPage({
         page={page}
         totalPages={totalPages}
         search={search}
+        categories={categories}
       />
     </AnimatedPage>
   );

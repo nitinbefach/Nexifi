@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash2, Loader2 } from "lucide-react";
+import { Trash2, Loader2, Archive, ArchiveRestore, FolderSync } from "lucide-react";
 import { formatINR } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,20 +32,29 @@ interface ProductRow {
   images: { image_url: string; is_primary: boolean }[] | null;
 }
 
+interface CategoryOption {
+  id: string;
+  name: string;
+}
+
 interface Props {
   products: ProductRow[];
   page: number;
   totalPages: number;
   search: string;
+  categories: { categories: CategoryOption[] };
 }
 
-export default function ProductsTableClient({ products, page, totalPages, search }: Props) {
+type BulkAction = "delete" | "archive" | "unarchive" | "category" | null;
+
+export default function ProductsTableClient({ products, page, totalPages, search, categories }: Props) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [deleting, setDeleting] = useState(false);
+  const [bulkAction, setBulkAction] = useState<BulkAction>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const allSelected = products.length > 0 && selectedIds.size === products.length;
+  const isBusy = bulkAction !== null;
 
   const toggleAll = () => {
     if (allSelected) {
@@ -64,11 +73,37 @@ export default function ProductsTableClient({ products, page, totalPages, search
     });
   };
 
+  const bulkUpdate = async (data: Record<string, unknown>, actionName: string) => {
+    const ids = Array.from(selectedIds);
+    let failed = 0;
+
+    for (const id of ids) {
+      try {
+        const res = await fetch(`/api/admin/products/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) failed++;
+      } catch {
+        failed++;
+      }
+    }
+
+    setSelectedIds(new Set());
+
+    if (failed > 0) {
+      alert(`${ids.length - failed} ${actionName}, ${failed} failed.`);
+    }
+
+    router.refresh();
+  };
+
   const handleDeleteSelected = async () => {
     if (selectedIds.size === 0) return;
     if (!confirm(`Delete ${selectedIds.size} product${selectedIds.size > 1 ? "s" : ""}? This cannot be undone.`)) return;
 
-    setDeleting(true);
+    setBulkAction("delete");
     const ids = Array.from(selectedIds);
     let failed = 0;
 
@@ -82,13 +117,41 @@ export default function ProductsTableClient({ products, page, totalPages, search
     }
 
     setSelectedIds(new Set());
-    setDeleting(false);
+    setBulkAction(null);
 
     if (failed > 0) {
       alert(`${ids.length - failed} deleted, ${failed} failed.`);
     }
 
     router.refresh();
+  };
+
+  const handleArchiveSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Archive ${selectedIds.size} product${selectedIds.size > 1 ? "s" : ""}? They will be hidden from the store.`)) return;
+
+    setBulkAction("archive");
+    await bulkUpdate({ is_active: false }, "archived");
+    setBulkAction(null);
+  };
+
+  const handleUnarchiveSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Unarchive ${selectedIds.size} product${selectedIds.size > 1 ? "s" : ""}? They will be visible on the store.`)) return;
+
+    setBulkAction("unarchive");
+    await bulkUpdate({ is_active: true }, "unarchived");
+    setBulkAction(null);
+  };
+
+  const handleCategoryChange = async (categoryId: string) => {
+    if (selectedIds.size === 0 || !categoryId) return;
+    const catName = categories.categories.find((c) => c.id === categoryId)?.name || "selected category";
+    if (!confirm(`Move ${selectedIds.size} product${selectedIds.size > 1 ? "s" : ""} to "${catName}"?`)) return;
+
+    setBulkAction("category");
+    await bulkUpdate({ category_id: categoryId }, "moved");
+    setBulkAction(null);
   };
 
   const handleDeleteOne = async (id: string, name: string) => {
@@ -114,22 +177,85 @@ export default function ProductsTableClient({ products, page, totalPages, search
     <>
       {/* Bulk Actions Toolbar */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 rounded-lg border bg-muted/50 px-4 py-2.5">
           <span className="text-sm font-medium">
             {selectedIds.size} selected
           </span>
+
+          <div className="h-5 w-px bg-border" />
+
+          {/* Change Category */}
+          <div className="relative">
+            <select
+              disabled={isBusy}
+              defaultValue=""
+              onChange={(e) => {
+                if (e.target.value) handleCategoryChange(e.target.value);
+                e.target.value = "";
+              }}
+              className="h-8 appearance-none rounded-md border bg-background px-2.5 pr-7 text-sm font-medium disabled:opacity-50"
+            >
+              <option value="" disabled>
+                Change Category
+              </option>
+              {categories.categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {bulkAction === "category" && (
+              <Loader2 className="absolute right-2 top-2 size-4 animate-spin text-muted-foreground" />
+            )}
+            {bulkAction !== "category" && (
+              <FolderSync className="pointer-events-none absolute right-2 top-2 size-4 text-muted-foreground" />
+            )}
+          </div>
+
+          {/* Archive */}
+          <button
+            onClick={handleArchiveSelected}
+            disabled={isBusy}
+            className="flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent disabled:opacity-50"
+          >
+            {bulkAction === "archive" ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Archive className="size-3.5" />
+            )}
+            Archive
+          </button>
+
+          {/* Unarchive */}
+          <button
+            onClick={handleUnarchiveSelected}
+            disabled={isBusy}
+            className="flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent disabled:opacity-50"
+          >
+            {bulkAction === "unarchive" ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <ArchiveRestore className="size-3.5" />
+            )}
+            Unarchive
+          </button>
+
+          {/* Delete */}
           <button
             onClick={handleDeleteSelected}
-            disabled={deleting}
+            disabled={isBusy}
             className="flex items-center gap-1.5 rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
           >
-            {deleting ? (
+            {bulkAction === "delete" ? (
               <Loader2 className="size-3.5 animate-spin" />
             ) : (
               <Trash2 className="size-3.5" />
             )}
-            Delete Selected
+            Delete
           </button>
+
+          <div className="h-5 w-px bg-border" />
+
           <button
             onClick={() => setSelectedIds(new Set())}
             className="text-sm text-muted-foreground hover:text-foreground"
