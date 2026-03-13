@@ -179,7 +179,8 @@ export async function getAllProductsForDropdown() {
 export async function getAdminProducts(
   page = 1,
   search = "",
-  limit = 20
+  limit = 20,
+  filters?: { status?: "active" | "archived"; category_id?: string; stock?: "low" }
 ) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
@@ -194,6 +195,17 @@ export async function getAdminProducts(
 
   if (search) {
     query = query.ilike("name", `%${search}%`);
+  }
+  if (filters?.status === "active") {
+    query = query.eq("is_active", true);
+  } else if (filters?.status === "archived") {
+    query = query.eq("is_active", false);
+  }
+  if (filters?.category_id) {
+    query = query.eq("category_id", filters.category_id);
+  }
+  if (filters?.stock === "low") {
+    query = query.lt("stock_quantity", 5);
   }
 
   const { data, count, error } = await query;
