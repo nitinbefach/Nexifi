@@ -285,7 +285,10 @@ export async function createProductsBatch(
 }
 
 export async function deleteProduct(id: string) {
-  // Delete images and variants first (cascade should handle this, but be safe)
+  // Delete related records that may block FK constraints
+  await supabaseAdmin.from("cart_items").delete().eq("product_id", id);
+  await supabaseAdmin.from("wishlists").delete().eq("product_id", id);
+  await supabaseAdmin.from("reviews").delete().eq("product_id", id);
   await supabaseAdmin.from("product_images").delete().eq("product_id", id);
   await supabaseAdmin.from("product_variants").delete().eq("product_id", id);
   const { error } = await supabaseAdmin.from("products").delete().eq("id", id);

@@ -4,6 +4,7 @@ import { formatINR } from "@/lib/utils";
 import { Plus, Upload } from "lucide-react";
 import LinkButton from "@/components/admin/LinkButton";
 import AnimatedPage from "@/components/admin/AnimatedPage";
+import ProductDeleteButton from "@/components/admin/ProductDeleteButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -166,12 +167,18 @@ export default async function AdminProductsPage({
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Link
-                          href={`/admin/products/${product.id}/edit`}
-                          className="text-sm font-medium text-nexifi-orange hover:underline"
-                        >
-                          Edit
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/admin/products/${product.id}/edit`}
+                            className="text-sm font-medium text-nexifi-orange hover:underline"
+                          >
+                            Edit
+                          </Link>
+                          <ProductDeleteButton
+                            productId={product.id}
+                            productName={product.name}
+                          />
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

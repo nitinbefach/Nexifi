@@ -43,11 +43,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   return (
     <div className="animate-fade-in mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-6 sm:text-sm">
-        <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
-        <ChevronRight className="size-3" />
-        <Link href="/products" className="transition-colors hover:text-foreground">Products</Link>
-        <ChevronRight className="size-3" />
+      <nav className="mb-5 flex items-center gap-2 text-xs text-muted-foreground sm:mb-6 sm:gap-2.5 sm:text-sm">
+        <Link href="/" className="shrink-0 transition-colors hover:text-foreground">Home</Link>
+        <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/50" />
+        <Link href="/products" className="shrink-0 transition-colors hover:text-foreground">Products</Link>
+        <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/50" />
         <span className="text-foreground">{category.name}</span>
       </nav>
 

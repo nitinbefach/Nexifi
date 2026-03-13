@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Minus, Plus, Share2, Truck, ShieldCheck, RotateCcw, CreditCard } from "lucide-react";
+import { ChevronRight, Minus, Plus, Share2, Truck, ShieldCheck, RotateCcw, CreditCard, ImageOff } from "lucide-react";
 import AddToCartButton from "@/components/storefront/AddToCartButton";
 import BuyNowButton from "@/components/storefront/BuyNowButton";
 import RelatedProducts from "@/components/storefront/RelatedProducts";
@@ -38,6 +38,7 @@ export default function ProductDetailClient({ slug, product, relatedProducts = [
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"description" | "shipping">("description");
+  const [mainImgError, setMainImgError] = useState(false);
 
   const discount =
     product.originalPrice > product.sellingPrice
@@ -47,6 +48,11 @@ export default function ProductDetailClient({ slug, product, relatedProducts = [
       : 0;
 
   const primaryImage = product.images[selectedImageIndex] ?? product.images[0];
+
+  // Reset error state when selecting a different image
+  useEffect(() => {
+    setMainImgError(false);
+  }, [selectedImageIndex]);
 
   // Populate product page store for mobile bottom bar
   useEffect(() => {
@@ -79,27 +85,27 @@ export default function ProductDetailClient({ slug, product, relatedProducts = [
   return (
     <div className="animate-fade-in mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-6 sm:text-sm">
-        <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
-        <ChevronRight className="size-3" />
-        <Link href="/products" className="transition-colors hover:text-foreground">Products</Link>
-        <ChevronRight className="size-3" />
+      <nav className="mb-5 flex items-center gap-2 text-xs text-muted-foreground sm:mb-6 sm:gap-2.5 sm:text-sm">
+        <Link href="/" className="shrink-0 transition-colors hover:text-foreground">Home</Link>
+        <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/50" />
+        <Link href="/products" className="shrink-0 transition-colors hover:text-foreground">Products</Link>
         {product.category && (
           <>
-            <Link href={`/categories/${product.category.slug}`} className="transition-colors hover:text-foreground">
+            <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/50" />
+            <Link href={`/categories/${product.category.slug}`} className="shrink-0 transition-colors hover:text-foreground">
               {product.category.name}
             </Link>
-            <ChevronRight className="size-3" />
           </>
         )}
-        <span className="text-foreground line-clamp-1">{product.name}</span>
+        <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/50" />
+        <span className="truncate text-foreground">{product.name}</span>
       </nav>
 
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
         {/* Image Gallery */}
         <div className="flex-1">
           <div className="aspect-square overflow-hidden rounded-2xl border bg-muted/30">
-            {primaryImage ? (
+            {primaryImage && !mainImgError ? (
               <Image
                 src={primaryImage.image_url}
                 alt={primaryImage.alt_text || product.name}
@@ -107,10 +113,12 @@ export default function ProductDetailClient({ slug, product, relatedProducts = [
                 height={800}
                 className="size-full object-cover transition-transform duration-500 hover:scale-105"
                 priority
+                onError={() => setMainImgError(true)}
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-sm text-muted-foreground">
-                No image available
+              <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                <ImageOff className="size-10" />
+                <span className="text-sm">No image available</span>
               </div>
             )}
           </div>
