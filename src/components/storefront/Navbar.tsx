@@ -64,16 +64,16 @@ export default function Navbar({ categories }: NavbarProps) {
     <>
       {/* Main Header */}
       <header
-        className={`sticky top-0 z-50 w-full bg-white transition-all duration-300 safe-top ${
+        className={`sticky top-0 z-50 w-full bg-white safe-top md:transition-shadow md:duration-300 ${
           scrolled ? "shadow-md" : ""
         }`}
       >
         {/* Top Row: Logo + Search + Actions */}
         <div
-          className={`mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
+          className={`mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 h-14 md:transition-all md:duration-300 ${
             scrolled
-              ? "h-12 sm:h-14"
-              : "h-14 sm:h-16 md:h-[68px]"
+              ? "md:h-14"
+              : "md:h-16 lg:h-[68px]"
           }`}
         >
           {/* Left: Hamburger + Logo */}
@@ -97,8 +97,8 @@ export default function Navbar({ categories }: NavbarProps) {
                 alt="NEXIFI"
                 width={140}
                 height={48}
-                className={`w-auto transition-all duration-300 ${
-                  scrolled ? "h-6 sm:h-7" : "h-7 sm:h-8 md:h-9"
+                className={`w-auto h-7 md:transition-all md:duration-300 ${
+                  scrolled ? "md:h-7" : "md:h-8 lg:h-9"
                 }`}
                 priority
               />
@@ -189,7 +189,7 @@ export default function Navbar({ categories }: NavbarProps) {
                       <Link
                         href={link.href}
                         className={`flex items-center gap-1 px-4 text-sm font-medium transition-colors ${
-                          scrolled ? "py-2.5" : "py-3.5"
+                            scrolled ? "py-2.5" : "py-3.5"
                         } ${
                           isActive
                             ? "text-nexifi-orange"
@@ -228,7 +228,7 @@ export default function Navbar({ categories }: NavbarProps) {
                     <Link
                       href={link.href}
                       className={`flex px-4 text-sm font-medium transition-colors ${
-                        scrolled ? "py-2.5" : "py-3.5"
+                          scrolled ? "py-2.5" : "py-3.5"
                       } ${
                         isActive
                           ? "text-nexifi-orange"

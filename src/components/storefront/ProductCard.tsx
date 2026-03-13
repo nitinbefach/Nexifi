@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ImageOff } from "lucide-react";
 import StarRating from "./StarRating";
 
 export interface Product {
@@ -21,6 +22,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [imgError, setImgError] = useState(false);
   const discount =
     product.originalPrice > product.sellingPrice
       ? Math.round(
@@ -35,20 +37,21 @@ export default function ProductCard({ product }: ProductCardProps) {
     >
       {/* Image Area */}
       <div className="relative aspect-square overflow-hidden bg-muted/50">
-        {product.image ? (
+        {product.image && !imgError ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-400 group-hover:scale-108"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex size-full items-center justify-center">
-            <span className="text-xs text-muted-foreground">No image</span>
+          <div className="flex size-full flex-col items-center justify-center gap-1 text-muted-foreground">
+            <ImageOff className="size-6" />
+            <span className="text-xs">No image</span>
           </div>
         )}
-
       </div>
 
       {/* Info Area */}
