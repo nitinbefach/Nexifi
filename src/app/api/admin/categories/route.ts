@@ -4,7 +4,7 @@ import { createCategory } from "@/lib/supabase/admin-queries";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, slug, description, sort_order } = body;
+    const { name, slug, description, sort_order, image_url } = body;
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       slug,
       description: description || null,
       sort_order: sort_order ?? 0,
+      image_url: image_url || null,
     });
 
     if (error) {

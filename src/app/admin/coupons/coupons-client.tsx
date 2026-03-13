@@ -122,11 +122,7 @@ export default function CouponsClient({ initialCoupons }: Props) {
       resetForm();
       router.refresh();
       // Optimistic: re-fetch
-      const refreshRes = await fetch("/api/admin/coupons");
-      if (refreshRes.ok) {
-        // We don't have a GET route, so just refresh the page
-      }
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {

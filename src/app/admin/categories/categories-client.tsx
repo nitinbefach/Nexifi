@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, X, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { useRef } from "react";
+import { Plus, Pencil, Trash2, X, Loader2, ChevronDown, ChevronUp, Upload, ImageIcon } from "lucide-react";
 
 interface Category {
   id: string;
@@ -40,12 +41,16 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formSortOrder, setFormSortOrder] = useState(0);
+  const [formImageUrl, setFormImageUrl] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setFormName("");
     setFormDescription("");
     setFormSortOrder(0);
+    setFormImageUrl("");
     setSelectedProductIds([]);
     setEditingId(null);
     setShowAdd(false);
@@ -58,6 +63,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
     setFormName(cat.name);
     setFormDescription(cat.description || "");
     setFormSortOrder(cat.sort_order);
+    setFormImageUrl(cat.image_url || "");
     // Pre-select products that belong to this category
     setSelectedProductIds(
       products.filter((p) => p.category_id === cat.id).map((p) => p.id)
@@ -78,6 +84,29 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+      const { url } = await res.json();
+      setFormImageUrl(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setImageUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const getCategoryName = (categoryId: string | null) => {
@@ -104,6 +133,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
       slug,
       description: formDescription.trim() || null,
       sort_order: formSortOrder,
+      image_url: formImageUrl.trim() || null,
     };
 
     // Only include product_ids when editing (not when creating — new category has no products yet)
@@ -244,6 +274,47 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
               className="rounded-md border px-3 py-2 text-sm focus:border-nexifi-orange focus:outline-none focus:ring-1 focus:ring-nexifi-orange"
             />
           </div>
+
+          {/* Category Image */}
+          <div className="mt-3">
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Category Image</label>
+            {formImageUrl ? (
+              <div className="flex items-center gap-3">
+                <div className="relative size-20 overflow-hidden rounded-lg border">
+                  <img src={formImageUrl} alt="Category" className="size-full object-cover" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormImageUrl("")}
+                  className="rounded p-1 text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                  title="Remove image"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={imageUploading}
+                className="flex items-center gap-2 rounded-md border-2 border-dashed px-4 py-3 text-sm text-muted-foreground hover:border-nexifi-orange hover:text-nexifi-orange disabled:opacity-50"
+              >
+                {imageUploading ? (
+                  <><Loader2 className="size-4 animate-spin" /> Uploading...</>
+                ) : (
+                  <><Upload className="size-4" /> Upload image (optional)</>
+                )}
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </div>
+
           <div className="mt-3 flex gap-2">
             <button
               onClick={handleSave}
@@ -313,6 +384,46 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                     </div>
                   </div>
 
+                  {/* Category Image */}
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Category Image</label>
+                    {formImageUrl ? (
+                      <div className="flex items-center gap-3">
+                        <div className="relative size-20 overflow-hidden rounded-lg border">
+                          <img src={formImageUrl} alt="Category" className="size-full object-cover" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFormImageUrl("")}
+                          className="rounded p-1 text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                          title="Remove image"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={imageUploading}
+                        className="flex items-center gap-2 rounded-md border-2 border-dashed px-4 py-3 text-sm text-muted-foreground hover:border-nexifi-orange hover:text-nexifi-orange disabled:opacity-50"
+                      >
+                        {imageUploading ? (
+                          <><Loader2 className="size-4 animate-spin" /> Uploading...</>
+                        ) : (
+                          <><Upload className="size-4" /> Upload image (optional)</>
+                        )}
+                      </button>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </div>
+
                   {/* Product Assignment Section */}
                   <div>
                     <button
@@ -371,7 +482,17 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
               ) : (
                 /* Display Row */
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex items-center gap-3">
+                    {cat.image_url ? (
+                      <div className="size-10 shrink-0 overflow-hidden rounded-md">
+                        <img src={cat.image_url} alt={cat.name} className="size-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
+                        <ImageIcon className="size-4 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => startEdit(cat)}
@@ -389,6 +510,7 @@ export default function CategoriesClient({ initialCategories, allProducts }: Pro
                       {cat.product_count} product{cat.product_count !== 1 ? "s" : ""}
                       {cat.description ? ` · ${cat.description}` : ""}
                     </p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button

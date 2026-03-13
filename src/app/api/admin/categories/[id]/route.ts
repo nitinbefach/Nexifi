@@ -9,7 +9,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, slug, description, sort_order, is_active } = body;
+    const { name, slug, description, sort_order, is_active, image_url } = body;
 
     const updateData: Record<string, unknown> = {};
     if (name !== undefined) updateData.name = name;
@@ -17,6 +17,7 @@ export async function PUT(
     if (description !== undefined) updateData.description = description;
     if (sort_order !== undefined) updateData.sort_order = sort_order;
     if (is_active !== undefined) updateData.is_active = is_active;
+    if (image_url !== undefined) updateData.image_url = image_url;
 
     const { category, error } = await updateCategory(id, updateData);
 

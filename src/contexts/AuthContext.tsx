@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types/user";
@@ -21,31 +21,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [supabase] = useState(() => createClient());
+  const initialLoadDone = useRef(false);
+
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+    setProfile(data);
+  };
 
   useEffect(() => {
-    const getUser = async () => {
+    // Use getSession (reads from local storage, instant) for initial load
+    // Then validate with getUser in background
+    const init = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        setUser(user);
+        const { data: { session } } = await supabase.auth.getSession();
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
 
-        if (user) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-          setProfile(data);
+        if (currentUser) {
+          await fetchProfile(currentUser.id);
         }
       } catch {
-        // Supabase not configured yet — fail silently
+        // Supabase not configured — fail silently
       } finally {
         setLoading(false);
+        initialLoadDone.current = true;
       }
     };
 
-    getUser();
+    init();
 
     const {
       data: { subscription },
@@ -53,19 +60,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
+      // Skip redundant profile fetch on initial INITIAL_SESSION event
+      if (!initialLoadDone.current) return;
+
       if (currentUser) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", currentUser.id)
-          .single();
-        setProfile(data);
+        await fetchProfile(currentUser.id);
       } else {
         setProfile(null);
       }
     });
 
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase]);
 
   const signIn = async (email: string, password: string) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, X, Loader2, ExternalLink, Truck } from "lucide-react";
 
 interface Shipment {
@@ -35,6 +36,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default function ShippingClient({ initialShipments }: Props) {
+  const router = useRouter();
   const [shipments, setShipments] = useState(initialShipments);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
@@ -126,7 +128,7 @@ export default function ShippingClient({ initialShipments }: Props) {
       }
 
       resetForm();
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
