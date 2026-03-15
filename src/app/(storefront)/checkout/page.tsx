@@ -94,35 +94,43 @@ export default function CheckoutPage() {
     setPlacing(true);
     setOrderError("");
 
+    const orderPayload = {
+      guest_name: `${form.firstName} ${form.lastName}`.trim(),
+      guest_email: form.email,
+      guest_phone: form.phone,
+      shipping_address: {
+        full_name: `${form.firstName} ${form.lastName}`.trim(),
+        phone: form.phone,
+        address_line1: form.address,
+        address_line2: form.address2 || undefined,
+        city: form.city,
+        state: form.state,
+        pincode: form.pincode,
+      },
+      payment_method: paymentMethod,
+      items: items.map((item) => ({
+        productId: item.productId,
+        variantId: item.variantId,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        originalPrice: item.originalPrice,
+        quantity: item.quantity,
+      })),
+      coupon_code: coupon?.code,
+    };
+
     try {
-      const res = await fetch("/api/orders/create", {
+      // Use different endpoint for online vs COD payments
+      const endpoint =
+        paymentMethod === "online"
+          ? "/api/phonepe/create-order"
+          : "/api/orders/create";
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          guest_name: `${form.firstName} ${form.lastName}`.trim(),
-          guest_email: form.email,
-          guest_phone: form.phone,
-          shipping_address: {
-            full_name: `${form.firstName} ${form.lastName}`.trim(),
-            phone: form.phone,
-            address_line1: form.address,
-            address_line2: form.address2 || undefined,
-            city: form.city,
-            state: form.state,
-            pincode: form.pincode,
-          },
-          payment_method: paymentMethod,
-          items: items.map((item) => ({
-            productId: item.productId,
-            variantId: item.variantId,
-            name: item.name,
-            image: item.image,
-            price: item.price,
-            originalPrice: item.originalPrice,
-            quantity: item.quantity,
-          })),
-          coupon_code: coupon?.code,
-        }),
+        body: JSON.stringify(orderPayload),
       });
 
       const data = await res.json();
@@ -136,6 +144,14 @@ export default function CheckoutPage() {
         return;
       }
 
+      // For online payments, redirect to PhonePe gateway
+      if (paymentMethod === "online" && data.redirectUrl) {
+        clearCart();
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      // For COD, go to confirmation page
       clearCart();
       router.push(`/order-confirmation/${data.order_number}`);
     } catch {

@@ -1,13 +1,15 @@
-import { getAdminProducts, getAdminCategories } from "@/lib/supabase/admin-queries";
 import { Plus, Upload } from "lucide-react";
+import { getAdminProducts, getAdminCategories } from "@/lib/supabase/admin-queries";
 import LinkButton from "@/components/admin/LinkButton";
 import AnimatedPage from "@/components/admin/AnimatedPage";
-import { Input } from "@/components/ui/input";
-import ProductsTableClient from "./ProductsTableClient";
+import ProductsTable from "./products-table";
 
 interface SearchParams {
   page?: string;
   search?: string;
+  status?: string;
+  category?: string;
+  stock?: string;
 }
 
 export default async function AdminProductsPage({
@@ -18,12 +20,16 @@ export default async function AdminProductsPage({
   const sp = await searchParams;
   const page = Number(sp.page) || 1;
   const search = sp.search || "";
+  const status = (sp.status === "active" || sp.status === "archived") ? sp.status : undefined;
+  const category = sp.category || undefined;
+  const stock = sp.stock === "low" ? "low" as const : undefined;
   const limit = 20;
 
-  const [{ products, total }, categories] = await Promise.all([
-    getAdminProducts(page, search, limit),
+  const [{ products, total }, { categories }] = await Promise.all([
+    getAdminProducts(page, search, limit, { status, category_id: category, stock }),
     getAdminCategories(),
   ]);
+
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -47,24 +53,16 @@ export default async function AdminProductsPage({
         </div>
       </div>
 
-      {/* Search */}
-      <form method="GET">
-        <Input
-          type="text"
-          name="search"
-          defaultValue={search}
-          placeholder="Search products..."
-          className="max-w-sm"
-        />
-      </form>
-
-      {/* Product Table with multi-select */}
-      <ProductsTableClient
+      <ProductsTable
         products={products}
+        categories={categories.map((c) => ({ id: c.id, name: c.name }))}
         page={page}
         totalPages={totalPages}
+        total={total}
         search={search}
-        categories={categories}
+        filterStatus={status}
+        filterCategory={category}
+        filterStock={stock}
       />
     </AnimatedPage>
   );
