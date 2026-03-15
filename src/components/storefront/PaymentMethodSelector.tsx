@@ -51,25 +51,29 @@ export default function PaymentMethodSelector({
         </div>
       </label>
 
-      {/* PhonePe / UPI — Coming Soon */}
-      <label className="flex cursor-not-allowed items-start gap-3 rounded-lg border p-3.5 opacity-50">
+      {/* PhonePe / UPI */}
+      <label
+        className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors ${
+          selected === "online"
+            ? "border-nexifi-orange bg-nexifi-orange/5"
+            : "hover:border-muted-foreground/30"
+        }`}
+      >
         <input
           type="radio"
           name="payment_method"
           value="online"
-          disabled
-          className="mt-0.5"
+          checked={selected === "online"}
+          onChange={() => onChange("online")}
+          className="mt-0.5 accent-nexifi-orange"
         />
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <Smartphone className="size-4 text-purple-600" />
             <span className="text-sm font-medium">PhonePe / UPI</span>
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-              Coming Soon
-            </span>
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            UPI, Debit/Credit Cards, Net Banking
+            UPI, Debit/Credit Cards, Net Banking — No extra charge
           </p>
         </div>
       </label>

@@ -3,6 +3,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getStoreSettingsMap, createNotificationEntry } from "@/lib/supabase/admin-queries";
 import { createOrderSchema } from "@/validators/order.schema";
 import { rateLimit } from "@/lib/rate-limit";
+import { sendEmail } from "@/lib/resend";
+import { OrderConfirmedEmail } from "@/lib/email-templates/order-confirmed";
 
 export async function POST(request: NextRequest) {
   try {
@@ -202,6 +204,35 @@ export async function POST(request: NextRequest) {
       status: "pending",
       metadata: { guest_email: guest_email, order_number: result.order_number },
     }).catch(() => {});
+
+    // Send confirmation email for COD orders (fire and forget)
+    sendEmail(
+      guest_email,
+      `Order Confirmed — #${result.order_number} | NEXIFI`,
+      OrderConfirmedEmail({
+        orderNumber: result.order_number,
+        customerName: guest_name,
+        totalAmount,
+        subtotal,
+        discountAmount,
+        shippingCharge: shippingCharge,
+        codCharge,
+        gstAmount,
+        paymentMethod: payment_method,
+        items: orderItems,
+        shippingAddress: shipping_address,
+      })
+    )
+      .then(async (emailResult) => {
+        if (emailResult.success) {
+          await supabaseAdmin
+            .from("notification_log")
+            .update({ status: "sent" })
+            .eq("order_id", result.order_id)
+            .eq("type", "order_confirmation");
+        }
+      })
+      .catch(() => {});
 
     return NextResponse.json({
       order_id: result.order_id,
