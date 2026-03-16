@@ -217,9 +217,10 @@ export async function POST(request: NextRequest) {
       merchantOrderId,
     });
   } catch (error) {
-    console.error("PhonePe order creation error:", error);
+    const message = error instanceof Error ? error.message : "An unexpected error occurred";
+    console.error("PhonePe order creation error:", message, error);
     return NextResponse.json(
-      { error: "An unexpected error occurred" },
+      { error: message },
       { status: 500 }
     );
   }

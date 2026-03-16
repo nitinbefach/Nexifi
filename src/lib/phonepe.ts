@@ -86,12 +86,26 @@ export async function createPayment(
   params: CreatePaymentParams
 ): Promise<CreatePaymentResponse> {
   if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error(
-      "PhonePe credentials not configured. Set PHONEPE_CLIENT_ID and PHONEPE_CLIENT_SECRET."
-    );
+    return {
+      success: false,
+      error: "PhonePe credentials not configured. Set PHONEPE_CLIENT_ID and PHONEPE_CLIENT_SECRET.",
+      merchantOrderId: params.merchantOrderId,
+    };
   }
 
-  const token = await getAccessToken();
+  let token: string;
+  try {
+    token = await getAccessToken();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "OAuth token fetch failed";
+    console.error("[PhonePe] Auth error:", msg);
+    return {
+      success: false,
+      error: `PhonePe auth failed: ${msg}`,
+      merchantOrderId: params.merchantOrderId,
+    };
+  }
+
   const amountInPaise = Math.round(params.amount * 100);
 
   const payload = {
@@ -108,16 +122,38 @@ export async function createPayment(
     },
   };
 
-  const response = await fetch(`${getApiBase()}/checkout/v2/pay`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `O-Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${getApiBase()}/checkout/v2/pay`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `O-Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Network error";
+    console.error("[PhonePe] Payment request failed:", msg);
+    return {
+      success: false,
+      error: `PhonePe request failed: ${msg}`,
+      merchantOrderId: params.merchantOrderId,
+    };
+  }
 
-  const data = await response.json();
+  let data: any;
+  try {
+    data = await response.json();
+  } catch {
+    const text = await response.text().catch(() => "");
+    console.error("[PhonePe] Non-JSON response:", response.status, text);
+    return {
+      success: false,
+      error: `PhonePe returned non-JSON (${response.status}): ${text.slice(0, 200)}`,
+      merchantOrderId: params.merchantOrderId,
+    };
+  }
 
   if (response.ok && data.redirectUrl) {
     return {
@@ -128,9 +164,11 @@ export async function createPayment(
     };
   }
 
+  const errorMsg = data.message || data.code || data.error || `Payment creation failed (${response.status})`;
+  console.error("[PhonePe] Payment error:", response.status, JSON.stringify(data));
   return {
     success: false,
-    error: data.message || data.code || "Failed to create PhonePe payment",
+    error: errorMsg,
     merchantOrderId: params.merchantOrderId,
   };
 }
