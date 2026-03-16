@@ -1,7 +1,15 @@
 // Resend email client + send helpers
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-initialized so the build doesn't crash when RESEND_API_KEY is absent
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
+
 export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "orders@nexifi.com";
 
 interface SendResult {
@@ -24,7 +32,7 @@ export async function sendEmail(
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: `NEXIFI <${FROM_EMAIL}>`,
       to,
       subject,
