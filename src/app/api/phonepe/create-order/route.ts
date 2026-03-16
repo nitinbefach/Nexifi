@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getStoreSettingsMap, createNotificationEntry } from "@/lib/supabase/admin-queries";
 import { createOrderSchema } from "@/validators/order.schema";
-import { createPhonePeOrder } from "@/lib/phonepe";
+import { createPayment } from "@/lib/phonepe";
 import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
@@ -174,12 +174,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Create PhonePe payment
-    const phonePeResult = await createPhonePeOrder({
+    // 5. Create PhonePe v2 payment
+    const merchantOrderId = `NEXIFI_${result.order_id.slice(0, 8)}_${Date.now()}`;
+    const phonePeResult = await createPayment({
+      merchantOrderId,
       amount: totalAmount,
       orderId: result.order_id,
-      customerPhone: guest_phone,
-      customerEmail: guest_email,
     });
 
     if (!phonePeResult.success) {
@@ -194,10 +194,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Store the PhonePe transaction ID for verification
+    // Store the merchantOrderId for verification on redirect/webhook
     await supabaseAdmin
       .from("orders")
-      .update({ phonepe_transaction_id: phonePeResult.merchantTransactionId })
+      .update({ phonepe_transaction_id: merchantOrderId })
       .eq("id", result.order_id);
 
     // Log notification entry
@@ -214,7 +214,7 @@ export async function POST(request: NextRequest) {
       order_number: result.order_number,
       total_amount: totalAmount,
       redirectUrl: phonePeResult.redirectUrl,
-      merchantTransactionId: phonePeResult.merchantTransactionId,
+      merchantOrderId,
     });
   } catch (error) {
     console.error("PhonePe order creation error:", error);
