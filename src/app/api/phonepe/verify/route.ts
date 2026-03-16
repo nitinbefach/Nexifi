@@ -1,35 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { verifyPhonePePayment } from "@/lib/phonepe";
+import { checkOrderStatus } from "@/lib/phonepe";
 import { sendEmail } from "@/lib/resend";
 import { OrderConfirmedEmail } from "@/lib/email-templates/order-confirmed";
 
 /**
- * PhonePe redirects the customer here after payment.
+ * PhonePe redirects the customer here after payment (v2 Standard Checkout).
  * We verify the payment status and redirect to order confirmation or failure page.
  */
 export async function GET(request: NextRequest) {
-  const txnId = request.nextUrl.searchParams.get("txnId");
+  const merchantOrderId = request.nextUrl.searchParams.get("orderId");
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-  if (!txnId) {
+  if (!merchantOrderId) {
     return NextResponse.redirect(`${APP_URL}/checkout?error=missing_txn`);
   }
 
   try {
-    // 1. Find the order by PhonePe transaction ID
+    // 1. Find the order by merchantOrderId stored in phonepe_transaction_id
     const { data: order } = await supabaseAdmin
       .from("orders")
       .select("*, order_items:order_items(*)")
-      .eq("phonepe_transaction_id", txnId)
+      .eq("phonepe_transaction_id", merchantOrderId)
       .single();
 
     if (!order) {
       return NextResponse.redirect(`${APP_URL}/checkout?error=order_not_found`);
     }
 
-    // 2. Verify payment with PhonePe
-    const result = await verifyPhonePePayment(txnId);
+    // 2. Check payment status with PhonePe v2 API
+    const result = await checkOrderStatus(merchantOrderId);
 
     if (result.success && result.state === "COMPLETED") {
       // Payment successful — update order
